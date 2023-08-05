@@ -1,5 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'dart:convert';
+
 import 'package:email_client/models/mail_account.dart';
 import 'package:email_client/models/send_mail.dart';
 import 'package:email_client/util/http.dart';
@@ -41,9 +43,17 @@ class MailApi {
     await httpRequest(url, headers, HttpMethod.post, emailData!.toJson());
   }
 
-  Future<void> flagMail(String mailId, String flag) async {
-    final url = Uri.http(hostname, '/mail/$mailId');
-    await httpRequest(url, {...headers, 'flag': flag}, HttpMethod.patch);
+  Future<void> flagMail(
+      String mailId, List<String> flags, bool addFlags) async {
+    final body = {'flags': flags, 'addFlags': addFlags};
+    final url = Uri.http(hostname, '/mail/flag/$mailId');
+    await httpRequest(url, headers, HttpMethod.patch, jsonEncode(body));
+  }
+
+  Future<void> moveMailFolder(String mailId, String folderCallname) async {
+    final body = {'folder': folderCallname};
+    final url = Uri.http(hostname, '/mail/move/$mailId');
+    await httpRequest(url, headers, HttpMethod.put, jsonEncode(body));
   }
 
   Future<List<dynamic>> getFolders() async {

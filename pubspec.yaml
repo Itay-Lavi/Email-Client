@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -42,9 +44,13 @@ dependencies:
   html_editor_enhanced: ^2.5.1
   webviewx: ^0.1.0
   group_list_view: ^1.1.1
-  sqlite3: ^2.0.0
   sqflite: ^2.3.0
   path: ^1.8.3
+  sqflite_common_ffi: ^2.3.0
+  sqflite_common_ffi_web: ^0.4.0
+  path_provider: ^2.0.15
+  sqlite3: ^2.1.0
+  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_test:
@@ -71,7 +77,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/logo.png
-    # - images/a_dot_ham.jpeg
+    - assets/images/no_mail_selected.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

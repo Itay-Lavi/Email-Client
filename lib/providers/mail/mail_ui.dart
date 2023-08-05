@@ -19,6 +19,7 @@ class MailUIProvider with ChangeNotifier {
   }
 
   void controlMailEditor([bool? state]) {
+    if (_mailEditorIsOpen == state) return;
     _mailEditorIsOpen = state ??= !_mailEditorIsOpen;
     notifyListeners();
   }

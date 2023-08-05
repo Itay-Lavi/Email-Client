@@ -25,22 +25,27 @@ class AccountDbModel {
 class FolderDbModel {
   String name;
   String accountEmail;
-  String callname;
-  bool favorite;
+  int favorite;
+  int? unseenCount;
+  String? specialUseAttrib;
+  String? childrenJson;
 
-  FolderDbModel({
-    required this.name,
-    required this.accountEmail,
-    required this.callname,
-    required this.favorite,
-  });
+  FolderDbModel(
+      {required this.name,
+      required this.accountEmail,
+      required this.favorite,
+      this.unseenCount,
+      this.specialUseAttrib,
+      this.childrenJson});
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'name': name,
       'account_email': accountEmail,
-      'callname': callname,
-      'favorite': favorite ? 1 : 0,
+      'favorite': favorite,
+      'unseen_count': unseenCount,
+      'special_use_attrib': specialUseAttrib,
+      'children_json': childrenJson,
     };
   }
 }
@@ -53,7 +58,7 @@ class MailDbModel {
   String to;
   String subject;
   String timestamp;
-  bool seen;
+  String flags;
   String html;
 
   MailDbModel({
@@ -64,7 +69,7 @@ class MailDbModel {
     required this.to,
     required this.subject,
     required this.timestamp,
-    required this.seen,
+    required this.flags,
     required this.html,
   });
 
@@ -73,11 +78,11 @@ class MailDbModel {
       'id': id,
       'account_email': accountEmail,
       'folder_name': folderName,
-      'from': from,
-      'to': to,
+      'from_map': from,
+      'to_map': to,
       'subject': subject,
       'timestamp': timestamp,
-      'seen': seen ? 1 : 0,
+      'flags': flags,
       'html': html,
     };
   }

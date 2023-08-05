@@ -1,3 +1,4 @@
+import 'package:email_client/models/mail_account.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../models.dart';
@@ -32,11 +33,11 @@ class AccountDatabase {
     );
   }
 
-  Future<List<AccountDbModel>> getAllAccounts() async {
+  Future<List<MailAccountModel>> getAllAccounts() async {
     final List<Map<String, dynamic>> maps = await _db.query('accounts');
 
     return List.generate(maps.length, (i) {
-      return AccountDbModel(
+      return MailAccountModel(
         email: maps[i]['email'],
         jwt: maps[i]['jwt'],
         host: maps[i]['host'],

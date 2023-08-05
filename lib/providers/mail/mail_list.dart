@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:email_client/config/global_var.dart';
 import 'package:email_client/providers/mail/mail_ui.dart';
 import 'package:email_client/models/send_mail.dart';
 import 'package:email_client/util/async.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/mail_folder.dart';
 import '../../services/mail_api.dart';
 import '../../models/mail.dart';
 import '../../models/mail_account.dart';
@@ -18,8 +20,8 @@ class MailListProvider extends ChangeNotifier {
   List<MailModel>? _mails;
   List<MailModel>? get mails => _mails != null ? [..._mails!] : null;
 
-  MailModel? _currentMail;
-  MailModel? get currentMail => _currentMail;
+  MailModel? _selectedMail;
+  MailModel? get selectedMail => _selectedMail;
 
   MailListProvider(this._context, this._mailBoxProvider, this.account) {
     if (_mailBoxProvider != null &&
@@ -30,9 +32,12 @@ class MailListProvider extends ChangeNotifier {
   }
 
   void selectCurrentEmail(MailModel? current) {
-    _currentMail = (_currentMail == current) ? null : current;
-    if (_currentMail != null) {
-      _context.read<MailUIProvider>().controlMailEditor(false);
+    _selectedMail = (_selectedMail == current) ? null : current;
+
+    _context.read<MailUIProvider>().controlMailEditor(false);
+    if (current != null && !current.isSeen) {
+      flagEmail(current, [globalflags[1]], true);
+      current.updateFlags([globalflags[1]], true);
     }
     notifyListeners();
   }
@@ -51,7 +56,7 @@ class MailListProvider extends ChangeNotifier {
 
     final currentFolder = _mailBoxProvider?.currentFolder;
     final callableFolderName =
-        currentFolder?.callName ?? currentFolder?.name ?? 'inbox';
+        currentFolder?.callname ?? currentFolder?.name ?? 'inbox';
 
     final mailApi = MailApi(
         account: account!,
@@ -67,7 +72,6 @@ class MailListProvider extends ChangeNotifier {
       _mails ??= [];
       if (fetchedEmails.isNotEmpty) {
         if (refresh) {
-          //if refresh is true, update deleted messages
           List<String?> fetchedEmailIds =
               fetchedEmails.map((mail) => mail.id).toList();
           _mails!.removeWhere((mail) => !fetchedEmailIds.contains(mail.id));
@@ -76,11 +80,11 @@ class MailListProvider extends ChangeNotifier {
         for (MailModel newMail in fetchedEmails) {
           int index = _mails!.indexWhere((mail) => mail.id == newMail.id);
           if (index != -1) {
-            // MailModel with matching ID found, update it
-            _mails![index] = newMail;
+            _mails![index] =
+                newMail; // MailModel with matching ID found, update it
           } else {
-            // MailModel with matching ID not found, add it
-            _mails!.add(newMail);
+            _mails!
+                .add(newMail); // MailModel with matching ID not found, add it
           }
         }
       }
@@ -101,8 +105,39 @@ class MailListProvider extends ChangeNotifier {
       print(e);
     }
   }
+
+  Future<void> flagEmail(
+      MailModel mail, List<String> flags, bool addFlags) async {
+    final mailApi = MailApi(account: account!);
+    mail.updateFlags(flags, addFlags);
+    try {
+      await mailApi.flagMail(mail.id!, flags, addFlags);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> moveEmail(MailModel mail, String specialUseAttrib) async {
+    String? folderCallname;
+    try {
+      MailFolderModel? foundFolder =
+          MailFolderModel.findFolderBySpecialUseAttribInList(
+              _mailBoxProvider!.folders, specialUseAttrib);
+      folderCallname = foundFolder?.callname;
+    } catch (_) {}
+
+    if (folderCallname == null) {
+      return;
+    }
+
+    _mails!.remove(mail);
+    notifyListeners();
+
+    final mailApi = MailApi(account: account!, folderName: folderCallname);
+    try {
+      await mailApi.moveMailFolder(mail.id!, folderCallname);
+    } catch (e) {
+      print(e);
+    }
+  }
 }
-
-// Future<void> flagEmail(String messageId, String flag) {
-
-// }

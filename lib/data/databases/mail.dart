@@ -46,7 +46,7 @@ class MailDatabase {
         "to": maps[i]['to'],
         "subject": maps[i]['subject'],
         "timestamp": maps[i]['timestamp'],
-        "seen": maps[i]['seen'] == 1,
+        "flags": maps[i]['flags'],
         "html": maps[i]['html'],
       });
     });

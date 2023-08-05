@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../config/global_var.dart';
+import '../../../responsive.dart';
 import './header.dart';
 import './listview.dart';
 
@@ -9,9 +10,11 @@ class Mailbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = Responsive.isMobile(context);
+
     return Container(
       decoration: const BoxDecoration(border: Border(right: borderSide)),
-      width: 380,
+      width: isMobile ? double.infinity : 380,
       child: const Column(
         children: [
           MailBoxHeader(),

@@ -25,6 +25,8 @@ class AuthForm extends StatelessWidget {
       host = val;
     }
 
+    final mailAccountProv = context.read<MailAccountsProvider>();
+
     return Container(
         margin: const EdgeInsets.all(12),
         width: 400,
@@ -34,8 +36,7 @@ class AuthForm extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: FutureBuilder(
-                future:
-                    context.read<MailAccountsProvider>().getSupportedHosts(),
+                future: mailAccountProv.getSupportedHosts(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -47,10 +48,23 @@ class AuthForm extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Image.asset(
-                          '../../../assets/images/logo.png',
-                          width: 100,
-                          height: 100,
+                        Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.center,
+                              child: Image.asset(
+                                'assets/images/logo.png',
+                                width: 100,
+                                height: 100,
+                                alignment: Alignment.center,
+                              ),
+                            ),
+                            if (Navigator.canPop(context) &&
+                                mailAccountProv.currentAccount != null)
+                              IconButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  icon: const Icon(Icons.arrow_back)),
+                          ],
                         ),
                         TextFormField(
                           controller: emailController,

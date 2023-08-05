@@ -1,22 +1,30 @@
-import 'package:email_client/models/mail_account.dart';
-import 'package:email_client/providers/mail/accounts.dart';
-import 'package:email_client/screens/auth/form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/mail_account.dart';
+import '../../providers/mail/accounts.dart';
+import '../home/home_screen.dart';
+import 'form.dart';
+
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
-  static const routeName = '/auth-screen';
+  static const routeName = '/auth';
 
   @override
   Widget build(BuildContext context) {
     void addAccount(
         {required String email,
         required String password,
-        required String host}) {
+        required String host}) async {
       final mailAccount =
           MailAccountModel(host: host, email: email, password: password);
-      context.read<MailAccountsProvider>().addMailAccount(mailAccount);
+      try {
+        await context.read<MailAccountsProvider>().addMailAccount(mailAccount);
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+      } catch (e) {
+        print(e);
+      }
     }
 
     return Scaffold(

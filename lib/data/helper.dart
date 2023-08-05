@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
@@ -19,13 +22,23 @@ class DatabaseHelper {
   DatabaseHelper.internal();
 
   Future<Database> _initDatabase() async {
-    _database = await openDatabase(
-      join(await getDatabasesPath(), 'mail_database.db'),
-      onCreate: (db, version) async {
-        await _createTables(db);
-      },
-      version: 1,
-    );
+    String mobilePath = '';
+    if (kIsWeb) {
+      // Set the database factory to use FFI implementation for web
+      databaseFactory = databaseFactoryFfiWeb;
+    } else {
+      final appDir = await getApplicationDocumentsDirectory();
+      mobilePath = join(appDir.path, 'mail_database.db');
+    }
+
+    _database = await databaseFactory.openDatabase(
+        kIsWeb ? 'mail_database.db' : mobilePath,
+        options: OpenDatabaseOptions(
+          onCreate: (db, version) async {
+            await _createTables(db);
+          },
+          version: 1,
+        ));
     return _database!;
   }
 
@@ -35,11 +48,11 @@ class DatabaseHelper {
     );
 
     await db.execute(
-      'CREATE TABLE folders(name VARCHAR(255) PRIMARY KEY, account_email VARCHAR(255), callname VARCHAR(255), favorite BOOLEAN)',
+      'CREATE TABLE folders(name VARCHAR(255) PRIMARY KEY, account_email VARCHAR(255), favorite INTEGER, unseen_count INTEGER, special_use_attrib VARCHAR(255), children_json TEXT)',
     );
 
     await db.execute(
-      'CREATE TABLE mails(id INTEGER PRIMARY KEY, account_email VARCHAR(255), folder_name VARCHAR(255), from TEXT, to TEXT, subject TEXT, timestamp TEXT, seen BOOLEAN, html TEXT)',
+      'CREATE TABLE mails(id INTEGER PRIMARY KEY, account_email VARCHAR(255), folder_name VARCHAR(255), from_map TEXT, to_map TEXT, subject TEXT, timestamp TEXT, seen INTEGER, html TEXT)',
     );
   }
 
@@ -47,7 +60,3 @@ class DatabaseHelper {
     await _database!.close();
   }
 }
-//final dbHelper = DatabaseHelper();
-  // final db = await dbHelper.database;
-  //   return await db.insert('accounts', account.toMap(),
-  //       conflictAlgorithm: ConflictAlgorithm.replace);

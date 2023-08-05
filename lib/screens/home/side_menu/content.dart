@@ -1,13 +1,16 @@
 import 'package:email_client/models/send_mail.dart';
+import 'package:email_client/providers/mail/mail_list.dart';
 import 'package:email_client/providers/mail/mail_ui.dart';
+import 'package:email_client/responsive.dart';
+import 'package:email_client/screens/auth/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/mail_folder.dart';
-import '../../providers/mail/accounts.dart';
-import '../../providers/mail/mailbox.dart';
+import '../../../models/mail_folder.dart';
+import '../../../providers/mail/accounts.dart';
+import '../../../providers/mail/mailbox.dart';
 
-import '../../providers/ui_provider.dart';
+import '../../../providers/ui_provider.dart';
 import './list_tile/inkwell_list_tile.dart';
 import './list_tile/item.dart';
 import './list_tile/recursive_folder_list.dart';
@@ -34,6 +37,15 @@ class SideMenuContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Consumer<MailListProvider>(builder: (context, mailListProv, _) {
+          final mailIsSelected = mailListProv.selectedMail != null;
+          return (Responsive.isMobile(context) && mailIsSelected)
+              ? IconButton(
+                  color: backgroundColor,
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => mailListProv.selectCurrentEmail(null))
+              : const SizedBox();
+        }),
         IconButton(
             color: backgroundColor,
             icon: const Icon(Icons.menu_outlined),
@@ -52,7 +64,8 @@ class SideMenuContent extends StatelessWidget {
                       title: sideMenuIsOpen ? 'New mail' : '',
                     )),
                 InkWellListTile(
-                    onTap: () {},
+                    onTap: () => Navigator.of(context)
+                        .pushNamed(AuthScreen.routeName, arguments: ''),
                     padding: 8,
                     listTile: TitleListTile(
                       icon: Icons.account_circle_outlined,
@@ -81,7 +94,7 @@ class SideMenuContent extends StatelessWidget {
                     (folder) => ChangeNotifierProvider.value(
                         value: folder, child: const RecursiveFolderList()),
                   ),
-                if (folders.isEmpty)
+                if (folders.isEmpty && Responsive.isDesktop(context))
                   CircularProgressIndicator(color: backgroundColor)
               ],
             ),

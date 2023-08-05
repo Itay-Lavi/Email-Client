@@ -8,6 +8,7 @@ import 'package:group_list_view/group_list_view.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../util/mail_logic.dart';
 import '../../../widgets/snackbar.dart';
 
 class MailBoxListView extends StatefulWidget {
@@ -55,7 +56,8 @@ class _MailBoxListViewState extends State<MailBoxListView> {
   @override
   Widget build(BuildContext context) {
     mails = context.watch<MailListProvider>().mails;
-    Map<String, List<MailModel>> groupedEmails = groupEmails();
+    Map<String, List<MailModel>> groupedEmails =
+        groupAndSortEmails(mails ?? []);
 
     if (mails == null) {
       return const Center(
@@ -70,29 +72,14 @@ class _MailBoxListViewState extends State<MailBoxListView> {
           return groupedEmails.values.toList()[section].length;
         },
         itemBuilder: (BuildContext ctx, IndexPath i) =>
-            MailBoxItem(groupedEmails.values.toList()[i.section][i.index]),
+            ChangeNotifierProvider<MailModel>.value(
+                value: groupedEmails.values.toList()[i.section][i.index],
+                child: const MailBoxItem()),
         groupHeaderBuilder: (BuildContext _, int section) {
           DateFormat format = DateFormat('dd/MM/yyyy');
           final date = format.parse(groupedEmails.keys.toList()[section]);
           return GroupItemHeader(date);
         },
         sectionSeparatorBuilder: (_, __) => const Divider(height: 1));
-  }
-
-  Map<String, List<MailModel>> groupEmails() {
-    Map<String, List<MailModel>> groupedEmails = {};
-    if (mails == null || mails!.isEmpty) {
-      return groupedEmails;
-    }
-
-    for (MailModel mail in mails!) {
-      String day = DateFormat('dd/MM/yyyy').format(mail.timestamp);
-      if (groupedEmails.containsKey(day)) {
-        groupedEmails[day]!.add(mail);
-      } else {
-        groupedEmails[day] = [mail];
-      }
-    }
-    return groupedEmails;
   }
 }

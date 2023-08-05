@@ -1,13 +1,18 @@
 import 'dart:convert';
 
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-class MailModel {
+import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+
+import '../config/global_var.dart';
+
+// ignore: must_be_immutable
+class MailModel extends Equatable with ChangeNotifier {
   String? id;
   Map<String, dynamic>? from;
   Map<String, dynamic>? to;
   String? subject;
   DateTime timestamp;
-  bool seen;
+  List<String>? flags;
   List<dynamic>? attachments;
   String? html;
   MailModel({
@@ -16,10 +21,25 @@ class MailModel {
     required this.to,
     required this.subject,
     required this.timestamp,
-    required this.seen,
+    required this.flags,
     this.attachments,
     this.html,
   });
+
+  bool get isSeen =>
+      flags!.any((flag) => flag.toLowerCase().contains(globalflags[1]));
+
+  bool get isFlagged =>
+      flags!.any((flag) => flag.toLowerCase().contains(globalflags[0]));
+
+  void updateFlags(List<String> newFlags, bool addFlags) {
+    if (addFlags) {
+      flags!.addAll(newFlags);
+    } else {
+      flags!.removeWhere((flag) => newFlags.contains(flag.toLowerCase()));
+    }
+    notifyListeners();
+  }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -28,7 +48,7 @@ class MailModel {
       'to': to,
       'subject': subject,
       'timestamp': timestamp.millisecondsSinceEpoch,
-      'seen': seen,
+      'flags': flags,
       'attachments': attachments,
       'html': html,
     };
@@ -45,7 +65,7 @@ class MailModel {
           : null,
       subject: map['subject'] as String,
       timestamp: DateTime.parse(map['timestamp']),
-      seen: map['seen'] as bool,
+      flags: map['flags'] != null ? List<String>.from(map['flags']) : null,
       attachments: map['attachments'] != null
           ? List<dynamic>.from((map['attachments'] as List<dynamic>))
           : null,
@@ -54,4 +74,7 @@ class MailModel {
   }
 
   String toJson() => json.encode(toMap());
+
+  @override
+  List<Object?> get props => [id, from, to, subject, timestamp, flags, html];
 }

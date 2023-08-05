@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../models/mail.dart';
+import '../../../../../util/mail_logic.dart';
 
 class HeaderMailDetails extends StatelessWidget {
   final MailModel mail;
@@ -14,17 +15,9 @@ class HeaderMailDetails extends StatelessWidget {
     String dateAndTime =
         '${DateFormat.yMd().format(mail.timestamp)}  ${DateFormat.Hm().format(mail.timestamp)}';
 
-    String fromAddress = '';
-    try {
-      fromAddress = mail.from?['value'][0]['address'];
-    } catch (_) {}
+    String fromAddress = getFromAddress(mail) ?? '';
 
-    List<String> toAddress = [];
-    try {
-      final addressArr = mail.to?['value'] as List<dynamic>;
-      toAddress =
-          addressArr.map((value) => value['address'] as String? ?? '').toList();
-    } catch (_) {}
+    List<String> toAddress = getAddressList(mail.to);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -40,23 +33,23 @@ class HeaderMailDetails extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 5),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
                       fromAddress,
                       style: textStyle.copyWith(fontSize: 18),
                       maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  Text(
-                    dateAndTime,
-                    style: const TextStyle(
-                        color: Color.fromARGB(255, 100, 100, 100)),
-                  ),
-                ],
+                    Text(
+                      dateAndTime,
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 100, 100, 100)),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

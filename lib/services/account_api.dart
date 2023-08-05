@@ -19,7 +19,7 @@ class AccountApi {
     return response;
   }
 
-  Future<dynamic> generateJwt() async {
+  Future<dynamic> signin() async {
     if (account.password == null) {
       throw ArgumentError('password cannot be null.');
     }

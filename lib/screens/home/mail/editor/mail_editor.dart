@@ -21,6 +21,7 @@ class MailEditor extends StatelessWidget {
 
       try {
         await context.read<MailListProvider>().sendEmail(mailData);
+        // ignore: use_build_context_synchronously
         context.read<MailUIProvider>().controlMailEditor(false);
       } catch (error) {
         showButtonSnackbar(context, 'An error occurred!');

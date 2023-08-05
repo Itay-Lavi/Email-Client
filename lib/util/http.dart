@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-enum HttpMethod { get, post, patch }
+enum HttpMethod { get, post, patch, put }
 
 Future<Map<String, dynamic>> httpRequest(
     Uri url, Map<String, String> headers, HttpMethod method,
@@ -23,7 +23,13 @@ Future<Map<String, dynamic>> httpRequest(
 
     case HttpMethod.patch:
       response = await http
-          .patch(url, headers: headers)
+          .patch(url, headers: headers, body: body)
+          .timeout(const Duration(seconds: 10));
+      break;
+
+    case HttpMethod.put:
+      response = await http
+          .put(url, headers: headers, body: body)
           .timeout(const Duration(seconds: 10));
       break;
 

@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../../config/global_var.dart';
+import '../../../../../providers/mail/mail_list.dart';
 import '../../../../../providers/mail/mail_ui.dart';
 import '../../../../../models/mail.dart';
 import '../../../../../models/send_mail.dart';
+import '../../../../../util/mail_logic.dart';
 import '../../../../../widgets/btn_icon.dart';
 
-List<MailHeaderBtnIcon> btnActions(MailUIProvider uiProv, MailModel mail) {
+List<MailHeaderBtnIcon> btnActions(
+    BuildContext context, MailUIProvider uiProv, MailModel mail) {
   void setMailDataAndControlEditor(MailDataModel mailData) {
     uiProv.controlMailEditor(true);
     uiProv.setMailData(mailData);
   }
 
-  List<String> getAddressList(Map<String, dynamic>? mail) {
-    List<String> addressList = [];
-
-    try {
-      final addressArr = mail?['value'] as List<dynamic>;
-      addressList =
-          addressArr.map((value) => value['address'] as String? ?? '').toList();
-    } catch (_) {}
-
-    return addressList;
+  void deleteMail() {
+    final mailProv = context.read<MailListProvider>();
+    mailProv.selectCurrentEmail(null);
+    mailProv.moveEmail(mail, specialUseAttribTypes[0]);
   }
 
   return [
@@ -61,9 +60,7 @@ List<MailHeaderBtnIcon> btnActions(MailUIProvider uiProv, MailModel mail) {
       title: 'Forward',
     ),
     MailHeaderBtnIcon(
-      onTap: () {
-        // Handle delete action here
-      },
+      onTap: deleteMail,
       icon: Icons.delete_outlined,
       title: 'Delete',
     ),

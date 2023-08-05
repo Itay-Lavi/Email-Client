@@ -11,29 +11,33 @@ class MailBoxHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: const BoxDecoration(border: Border(bottom: borderSide)),
+        decoration: BoxDecoration(
+          border: const Border(bottom: borderSide),
+          color: Theme.of(context).colorScheme.background,
+        ),
         padding: const EdgeInsets.fromLTRB(15, 30, 15, 0),
         child: Column(
           children: [
-            Row(
-              children: [
-                const Expanded(
+            Consumer<MailListProvider>(
+              builder: (context, prov, _) => Row(children: [
+                Expanded(
                     child: TextField(
                   decoration: InputDecoration(
-                      border: OutlineInputBorder(), hintText: 'Search'),
+                    border: const OutlineInputBorder(),
+                    hintText: 'Search',
+                    suffixIcon: IconButton(
+                        icon: const Icon(Icons.search), onPressed: () => prov),
+                  ),
                 )),
                 const SizedBox(width: 5),
-                Consumer<MailListProvider>(
-                  builder: (context, prov, _) => IconButton(
-                      onPressed: () => context
-                          .read<MailListProvider>()
-                          .getEmails('0:${prov.mails!.length}', true),
-                      icon: const Icon(Icons.refresh)),
-                ),
+                IconButton(
+                    onPressed: () =>
+                        prov.getEmails('0:${prov.mails!.length}', true),
+                    icon: const Icon(Icons.refresh)),
                 const SizedBox(width: 5),
                 IconButton(
                     onPressed: () {}, icon: const Icon(Icons.select_all)),
-              ],
+              ]),
             ),
             const SizedBox(
               height: 15,

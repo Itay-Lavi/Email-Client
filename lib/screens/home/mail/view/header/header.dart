@@ -22,27 +22,34 @@ class MailHeader extends StatelessWidget {
         title: mailActionsIsOpen ? 'Close Menu' : 'Open Menu',
         icon: mailActionsIsOpen ? Icons.arrow_upward : Icons.arrow_downward);
 
-    return Container(
+    return Padding(
       padding: const EdgeInsets.only(top: 5),
       child: mailActionsIsOpen
-          ? Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: btnActions(mailUIProvider, mail),
-                ),
-                const SizedBox(height: 5),
-                Text(mail.subject ?? '',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.black, fontSize: 18)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ? LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                return Column(
                   children: [
-                    HeaderMailDetails(mail),
-                    expandedBtn,
+                    if (width > 500)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: btnActions(context, mailUIProvider, mail),
+                      ),
+                    const SizedBox(height: 5),
+                    Text(mail.subject ?? '',
+                        textAlign: TextAlign.center,
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 18)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(child: HeaderMailDetails(mail)),
+                        expandedBtn,
+                      ],
+                    )
                   ],
-                )
-              ],
+                );
+              },
             )
           : Align(alignment: Alignment.bottomRight, child: expandedBtn),
     );

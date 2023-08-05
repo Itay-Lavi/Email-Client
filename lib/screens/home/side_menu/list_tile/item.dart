@@ -2,7 +2,7 @@ import 'package:email_client/models/mail_account.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../models/mail_folder.dart';
+import '../../../../models/mail_folder.dart';
 
 Widget _selectedBorder(bool selected, Widget widget) {
   return Container(
