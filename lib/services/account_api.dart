@@ -3,16 +3,15 @@ import 'package:email_client/util/http.dart';
 
 import '../config/global_var.dart';
 
-class AccountApi {
+class AccountApiService {
   final MailAccountModel account;
   Map<String, String> headers = {};
 
-  AccountApi(this.account);
+  AccountApiService({required this.account});
 
   static Future<List<String>> fetchSupportedHosts() async {
     final url = Uri.http(hostname, '/auth/hosts');
-    final body = await httpRequest(
-        url, {'Content-Type': 'application/json'}, HttpMethod.get);
+    final body = await httpRequest(url, {}, HttpMethod.get);
     final decodedBody = body['response'] as List<dynamic>;
     final List<String> response =
         decodedBody.map((host) => host.toString()).toList();
@@ -20,11 +19,7 @@ class AccountApi {
   }
 
   Future<dynamic> signin() async {
-    if (account.password == null) {
-      throw ArgumentError('password cannot be null.');
-    }
     headers = {
-      'Content-Type': 'application/json',
       'email': account.email,
       'password': account.password!,
       'hosting': account.host
@@ -40,7 +35,6 @@ class AccountApi {
       throw ArgumentError('jwt connot be null.');
     }
     headers = {
-      'Content-Type': 'application/json',
       'Authorization': account.jwt!,
     };
     final url = Uri.http(hostname, '/auth');

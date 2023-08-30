@@ -1,5 +1,5 @@
 import 'package:email_client/models/mail.dart';
-import 'package:email_client/providers/mail/mail_list.dart';
+import 'package:email_client/providers/mail/list/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

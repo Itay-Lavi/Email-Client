@@ -1,37 +1,36 @@
-import 'package:email_client/providers/mail/mail_ui.dart';
-import 'package:email_client/screens/home/mail/editor/header/header.dart';
-import 'package:email_client/screens/home/mail/editor/html_editor.dart';
 import 'package:flutter/material.dart';
+import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../providers/mail/mail_list.dart';
-import '../../../../models/send_mail.dart';
-import '../../../../widgets/snackbar.dart';
+import '../../../../providers/mail/mail_ui.dart';
+import 'header/header.dart';
 
 class MailEditor extends StatelessWidget {
   const MailEditor({super.key});
 
   @override
   Widget build(BuildContext context) {
-    void sendMail(MailDataModel mailData) async {
-      if (!mailData.validate()) {
-        showButtonSnackbar(context, 'Type emails correctly!');
-        return;
-      }
-
-      try {
-        await context.read<MailListProvider>().sendEmail(mailData);
-        // ignore: use_build_context_synchronously
-        context.read<MailUIProvider>().controlMailEditor(false);
-      } catch (error) {
-        showButtonSnackbar(context, 'An error occurred!');
-      }
-    }
+    final mailData = context.read<MailUIProvider>().mailData;
 
     return Column(
       children: [
-        MailEditorHeader(sendMail: sendMail),
-        const Expanded(child: MailHtmlEditor())
+        MailEditorHeader(mailData),
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) => HtmlEditor(
+              htmlToolbarOptions: const HtmlToolbarOptions(
+                  textStyle: TextStyle(color: Colors.black),
+                  toolbarType: ToolbarType.nativeGrid),
+              controller: HtmlEditorController(),
+              callbacks: Callbacks(
+                  onChangeContent: (value) => context
+                      .read<MailUIProvider>()
+                      .updateMailData(updates: {'html': value ?? ''})),
+              htmlEditorOptions: HtmlEditorOptions(initialText: mailData.html),
+              otherOptions: OtherOptions(height: constraints.maxHeight),
+            ),
+          ),
+        ),
       ],
     );
   }

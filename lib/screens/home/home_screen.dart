@@ -1,20 +1,21 @@
-import 'package:email_client/providers/mail/mail_list.dart';
-import 'package:email_client/providers/mail/mail_ui.dart';
-import 'package:email_client/providers/ui_provider.dart';
-import 'package:email_client/responsive.dart';
-import 'package:email_client/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'widgets/app_bar.dart';
+
 import '../../models/mail_account.dart';
 import '../../providers/mail/accounts.dart';
+import '../../providers/mail/list/provider.dart';
+import '../../providers/mail/mail_ui.dart';
+import '../../providers/ui_provider.dart';
+import '../../responsive.dart';
+import '../../screens/splash_screen.dart';
 import '../auth/auth_screen.dart';
-import 'side_menu/side_menu.dart';
-import './mailbox/mailbox.dart';
 import './mail/view/mail_view.dart';
-import './mail/editor/mail_editor.dart';
-
-//import 'package:flutter/foundation.dart' show kIsWeb;
+import './mailbox/mailbox.dart';
+import './side_menu/side_menu.dart';
+import 'widgets/floating_action_btn.dart';
+import 'mail/editor/mail_editor.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -24,46 +25,51 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mailEditorIsOpen =
         context.select<MailUIProvider, bool>((prov) => prov.mailEditorIsOpen);
-    final selectedMail = context
+    final mailIsSelected = context
         .select<MailListProvider, bool>((prov) => prov.selectedMail != null);
-    final isMobile = Responsive.isMobile(context);
 
     final curAccount = context.select<MailAccountsProvider, MailAccountModel?>(
         (prov) => prov.currentAccount);
-    final isLoading =
-        context.select<UIProvider, bool>((prov) => prov.isLoading);
+    final initialized =
+        context.select<UIProvider, bool>((prov) => prov.initialized);
+
+    final isAllMobile = Responsive.isAllMobile(context);
+    final isMobile = Responsive.isMobile(context);
 
     Future.delayed(const Duration(seconds: 1), () {
-      if (curAccount == null && !isLoading) {
+      if (curAccount == null && initialized) {
         return Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
       }
     });
 
     return SafeArea(
-      child: Scaffold(
-        key: context.read<UIProvider>().homeScaffoldKey,
-        drawer: const SideMenu(isDrawer: true),
-        body: isLoading || curAccount == null
-            ? const SplashScreen()
-            : Stack(
+      child: !initialized || curAccount == null
+          ? const SplashScreen()
+          : Scaffold(
+              key: context.read<UIProvider>().homeScaffoldKey,
+              appBar: isMobile ? const HomeAppBar() : null,
+              drawer: const SideMenu(isDrawer: true),
+              body: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SideMenu(),
-                      if (isMobile && !selectedMail)
-                        const Expanded(child: Mailbox()),
-                      if (!isMobile) const Mailbox(),
-                      if (isMobile && selectedMail || !isMobile)
-                        Expanded(
-                            child: mailEditorIsOpen
-                                ? const MailEditor()
-                                : const MailView())
-                    ],
-                  ),
+                  if (!isMobile) const SideMenu(),
+                  if (isAllMobile && !mailIsSelected && !mailEditorIsOpen)
+                    const Expanded(child: Mailbox()),
+                  if (!isAllMobile) const Mailbox(),
+                  if (!isAllMobile ||
+                      (!mailEditorIsOpen && mailIsSelected) ||
+                      mailEditorIsOpen)
+                    Expanded(
+                        child: mailEditorIsOpen
+                            ? const MailEditor()
+                            : const MailView())
                 ],
               ),
-      ),
+              floatingActionButton:
+                  isAllMobile && !mailIsSelected && !mailEditorIsOpen
+                      ? const HomeFloatingBtn()
+                      : null,
+            ),
     );
   }
 }

@@ -1,18 +1,16 @@
 import 'dart:convert';
 
-import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../config/global_var.dart';
 
-// ignore: must_be_immutable
-class MailModel extends Equatable with ChangeNotifier {
+class MailModel with ChangeNotifier {
   String? id;
   Map<String, dynamic>? from;
   Map<String, dynamic>? to;
   String? subject;
   DateTime timestamp;
-  List<String>? flags;
+  List<String> flags = [];
   List<dynamic>? attachments;
   String? html;
   MailModel({
@@ -27,18 +25,22 @@ class MailModel extends Equatable with ChangeNotifier {
   });
 
   bool get isSeen =>
-      flags!.any((flag) => flag.toLowerCase().contains(globalflags[1]));
+      flags.any((flag) => flag.toLowerCase().contains(globalflags[1]));
 
   bool get isFlagged =>
-      flags!.any((flag) => flag.toLowerCase().contains(globalflags[0]));
+      flags.any((flag) => flag.toLowerCase().contains(globalflags[0]));
 
   void updateFlags(List<String> newFlags, bool addFlags) {
     if (addFlags) {
-      flags!.addAll(newFlags);
+      flags.addAll(newFlags);
     } else {
-      flags!.removeWhere((flag) => newFlags.contains(flag.toLowerCase()));
+      flags.removeWhere((flag) => newFlags.contains(flag.toLowerCase()));
     }
     notifyListeners();
+  }
+
+  static bool areListsEqual(List<MailModel> original, List<MailModel> fetched) {
+    return listEquals(original, fetched);
   }
 
   Map<String, dynamic> toMap() {
@@ -65,16 +67,13 @@ class MailModel extends Equatable with ChangeNotifier {
           : null,
       subject: map['subject'] as String,
       timestamp: DateTime.parse(map['timestamp']),
-      flags: map['flags'] != null ? List<String>.from(map['flags']) : null,
+      flags: List<String>.from(map['flags']),
+      html: map['html'] != null ? map['html'] as String : null,
       attachments: map['attachments'] != null
           ? List<dynamic>.from((map['attachments'] as List<dynamic>))
           : null,
-      html: map['html'] != null ? map['html'] as String : null,
     );
   }
 
   String toJson() => json.encode(toMap());
-
-  @override
-  List<Object?> get props => [id, from, to, subject, timestamp, flags, html];
 }

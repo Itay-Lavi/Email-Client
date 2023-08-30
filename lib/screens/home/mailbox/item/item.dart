@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../config/global_var.dart';
 import '../../../../models/mail.dart';
-import '../../../../providers/mail/mail_list.dart';
+import '../../../../providers/mail/list/provider.dart';
 import '../../../../util/mail_logic.dart';
 
 class MailBoxItem extends StatelessWidget {
@@ -65,8 +65,8 @@ class MailBoxItem extends StatelessWidget {
             overflow: TextOverflow.clip,
             maxLines: 1,
           ),
-          trailing: ItemTrailing(
-              isCurrentYear: isCurrentYear, mail: mail, textStyle: textStyle)),
+          trailing:
+              ItemTrailing(isCurrentYear: isCurrentYear, textStyle: textStyle)),
     );
   }
 }

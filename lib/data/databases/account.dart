@@ -34,14 +34,17 @@ class AccountDatabase {
   }
 
   Future<List<MailAccountModel>> getAllAccounts() async {
-    final List<Map<String, dynamic>> maps = await _db.query('accounts');
+    final List<Map<String, dynamic>> accountMaps = await _db.query('accounts');
 
-    return List.generate(maps.length, (i) {
+    final List<AccountDbModel> dbAccounts =
+        accountMaps.map((map) => AccountDbModel.fromMap(map)).toList();
+
+    return List.generate(dbAccounts.length, (i) {
       return MailAccountModel(
-        email: maps[i]['email'],
-        jwt: maps[i]['jwt'],
-        host: maps[i]['host'],
-        unseenCount: maps[i]['unseen_count'],
+        email: dbAccounts[i].email,
+        jwt: dbAccounts[i].jwt,
+        host: dbAccounts[i].host,
+        unseenCount: dbAccounts[i].unseenCount,
       );
     });
   }

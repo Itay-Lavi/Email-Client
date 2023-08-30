@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import './providers/mail/accounts.dart';
-import './providers/mail/mail_list.dart';
+import 'providers/mail/list/provider.dart';
 import './providers/mail/mailbox.dart';
 import './providers/ui_provider.dart';
 import './screens/auth/auth_screen.dart';
@@ -39,7 +39,8 @@ class MyApp extends StatelessWidget {
           ),
           ChangeNotifierProxyProvider2<MailAccountsProvider, MailBoxProvider,
               MailListProvider>(
-            update: (context, mailAccountProvider, mailBoxProvider, __) =>
+            update: (context, mailAccountProvider, mailBoxProvider,
+                    previousProv) =>
                 MailListProvider(context, mailBoxProvider,
                     mailAccountProvider.currentAccount),
             create: (context) => MailListProvider(context, null, null),
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
               textTheme:
                   GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+              appBarTheme: const AppBarTheme(foregroundColor: Colors.white),
               useMaterial3: true,
             ),
             initialRoute: HomeScreen.routeName,

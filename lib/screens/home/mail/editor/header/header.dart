@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:email_client/providers/mail/list/provider.dart';
+import 'package:email_client/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,53 +13,54 @@ import '../../../../../providers/mail/accounts.dart';
 import 'custom_textfield.dart';
 
 class MailEditorHeader extends StatelessWidget {
-  final Function sendMail;
-  const MailEditorHeader({
+  final MailDataModel mailData;
+  const MailEditorHeader(
+    this.mailData, {
     Key? key,
-    required this.sendMail,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final mailUiProv = context.watch<MailUIProvider>();
+    final mailUiProv = context.read<MailUIProvider>();
     final account = context.select<MailAccountsProvider, MailAccountModel>(
         (prov) => prov.currentAccount!);
-    final MailDataModel mailData = mailUiProv.mailData;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Column(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: CustomTextField(
-                  controller: TextEditingController(text: account.email),
-                  prefixText: 'From: ',
-                  enabled: false,
-                  onChanged: (val) => mailData.from = val,
-                ),
+          Row(children: [
+            Expanded(
+              child: CustomTextField(
+                controller: TextEditingController(text: account.email),
+                prefixText: 'From: ',
+                enabled: false,
+                onChanged: (v) => {},
               ),
+            ),
+            if (!Responsive.isAllMobile(context))
               MailHeaderBtnIcon(
                   onTap: mailUiProv.controlMailEditor,
                   icon: Icons.delete_outline,
                   title: 'Discard'),
+            if (!Responsive.isMobile(context))
               MailHeaderBtnIcon(
-                  onTap: () => sendMail(mailData),
+                  onTap: context.read<MailListProvider>().sendEmail,
                   icon: Icons.send,
                   title: 'Send')
-            ],
-          ),
+          ]),
           CustomTextField(
               controller: TextEditingController(text: mailData.toToText()),
               prefixText: 'To: ',
               labelText: 'To',
-              onChanged: (val) => mailData.to = MailDataModel.toToList(val)),
+              onChanged: (val) => mailUiProv.updateMailData(
+                  updates: {'to': MailDataModel.toToList(val)})),
           CustomTextField(
             controller: TextEditingController(text: mailData.subject),
             prefixText: 'Subject: ',
             labelText: 'Subject',
-            onChanged: (val) => mailData.subject = val,
+            onChanged: (val) =>
+                mailUiProv.updateMailData(updates: {'subject': val}),
           ),
         ],
       ),

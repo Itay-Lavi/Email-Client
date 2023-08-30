@@ -1,5 +1,5 @@
 import 'package:email_client/models/send_mail.dart';
-import 'package:email_client/providers/mail/mail_list.dart';
+import 'package:email_client/providers/mail/list/provider.dart';
 import 'package:email_client/providers/mail/mail_ui.dart';
 import 'package:email_client/responsive.dart';
 import 'package:email_client/screens/auth/auth_screen.dart';
@@ -17,11 +17,15 @@ import './list_tile/recursive_folder_list.dart';
 import './list_tile/title.dart';
 
 class SideMenuContent extends StatelessWidget {
-  const SideMenuContent({super.key});
+  final bool isDrawer;
+  const SideMenuContent(this.isDrawer, {super.key});
 
   @override
   Widget build(BuildContext context) {
     final backgroundColor = Theme.of(context).colorScheme.background;
+
+    final mailEditorIsOpen =
+        context.select<MailUIProvider, bool>((prov) => prov.mailEditorIsOpen);
 
     final accountProv = context.watch<MailAccountsProvider>();
     final folders = context.select<MailBoxProvider, List<MailFolderModel>>(
@@ -29,9 +33,8 @@ class SideMenuContent extends StatelessWidget {
 
     void onNewMailBtn() {
       context.read<MailUIProvider>().controlMailEditor(true);
-      context
-          .read<MailUIProvider>()
-          .setMailData(MailDataModel(from: '', to: [], subject: '', html: ''));
+      context.read<MailUIProvider>().updateMailData(
+          mail: MailDataModel(from: '', to: [], subject: '', html: ''));
     }
 
     return Column(
@@ -39,11 +42,14 @@ class SideMenuContent extends StatelessWidget {
       children: [
         Consumer<MailListProvider>(builder: (context, mailListProv, _) {
           final mailIsSelected = mailListProv.selectedMail != null;
-          return (Responsive.isMobile(context) && mailIsSelected)
+          return (Responsive.isWideMobile(context) &&
+                  (mailIsSelected || mailEditorIsOpen))
               ? IconButton(
                   color: backgroundColor,
                   icon: const Icon(Icons.arrow_back),
-                  onPressed: () => mailListProv.selectCurrentEmail(null))
+                  onPressed: () => mailEditorIsOpen
+                      ? context.read<MailUIProvider>().controlMailEditor()
+                      : mailListProv.selectCurrentEmail(null))
               : const SizedBox();
         }),
         IconButton(
@@ -56,13 +62,14 @@ class SideMenuContent extends StatelessWidget {
           return SingleChildScrollView(
             child: Column(
               children: [
-                InkWellListTile(
-                    onTap: onNewMailBtn,
-                    padding: 8,
-                    listTile: TitleListTile(
-                      icon: Icons.add,
-                      title: sideMenuIsOpen ? 'New mail' : '',
-                    )),
+                if (!Responsive.isAllMobile(context))
+                  InkWellListTile(
+                      onTap: onNewMailBtn,
+                      padding: 8,
+                      listTile: TitleListTile(
+                        icon: Icons.add,
+                        title: sideMenuIsOpen ? 'New mail' : '',
+                      )),
                 InkWellListTile(
                     onTap: () => Navigator.of(context)
                         .pushNamed(AuthScreen.routeName, arguments: ''),
@@ -94,7 +101,8 @@ class SideMenuContent extends StatelessWidget {
                     (folder) => ChangeNotifierProvider.value(
                         value: folder, child: const RecursiveFolderList()),
                   ),
-                if (folders.isEmpty && Responsive.isDesktop(context))
+                if (folders.isEmpty &&
+                    (Responsive.isDesktop(context) || isDrawer))
                   CircularProgressIndicator(color: backgroundColor)
               ],
             ),

@@ -4,6 +4,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
+const accountTableName = 'accounts';
+const folderTableName = 'folders';
+const emailsTableName = 'emails';
+const emailsFoldersTableName = 'Email_Folders';
+
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
 
@@ -44,16 +49,27 @@ class DatabaseHelper {
 
   Future<void> _createTables(Database db) async {
     await db.execute(
-      'CREATE TABLE accounts(email VARCHAR(255) PRIMARY KEY, jwt TEXT, host VARCHAR(100), unseen_count INTEGER)',
+      'CREATE TABLE $accountTableName(email VARCHAR(255) PRIMARY KEY, jwt TEXT, host VARCHAR(100), unseen_count INTEGER)',
     );
 
     await db.execute(
-      'CREATE TABLE folders(name VARCHAR(255) PRIMARY KEY, account_email VARCHAR(255), favorite INTEGER, unseen_count INTEGER, special_use_attrib VARCHAR(255), children_json TEXT)',
+      '''CREATE TABLE $folderTableName(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255),
+       account_email VARCHAR(255), favorite INTEGER, unseen_count INTEGER,
+        special_use_attrib VARCHAR(255), parent_id INTEGER)''',
     );
 
     await db.execute(
-      'CREATE TABLE mails(id INTEGER PRIMARY KEY, account_email VARCHAR(255), folder_name VARCHAR(255), from_map TEXT, to_map TEXT, subject TEXT, timestamp TEXT, seen INTEGER, html TEXT)',
+      '''CREATE TABLE $emailsTableName(id VARCHAR(255) PRIMARY KEY, account_email VARCHAR(255), folder_id INTEGER,
+       from_map TEXT, to_map TEXT, subject TEXT, timestamp VARCHAR(255), flags TEXT, html TEXT)''',
     );
+
+    await db.execute('''
+      CREATE TABLE $emailsFoldersTableName(
+      folder_id INTEGER, email_id VARCHAR(255),
+        FOREIGN KEY (folder_id) REFERENCES $folderTableName(id) ON DELETE CASCADE,
+        FOREIGN KEY (email_id) REFERENCES $emailsTableName(id) ON DELETE CASCADE
+      );
+    ''');
   }
 
   Future<void> closeDatabase() async {

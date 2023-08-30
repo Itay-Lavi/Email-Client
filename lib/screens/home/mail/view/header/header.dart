@@ -1,4 +1,5 @@
 import 'package:email_client/providers/mail/mail_ui.dart';
+import 'package:email_client/responsive.dart';
 import 'package:email_client/screens/home/mail/view/header/details.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,33 +24,25 @@ class MailHeader extends StatelessWidget {
         icon: mailActionsIsOpen ? Icons.arrow_upward : Icons.arrow_downward);
 
     return Padding(
-      padding: const EdgeInsets.only(top: 5),
+      padding: const EdgeInsets.only(top: 3),
       child: mailActionsIsOpen
-          ? LayoutBuilder(
-              builder: (context, constraints) {
-                final width = constraints.maxWidth;
-                return Column(
+          ? Column(
+              children: [
+                if (!Responsive.isMobile(context))
+                  ChangeNotifierProvider.value(
+                      value: mail, child: const MailHeaderActions()),
+                const SizedBox(height: 5),
+                Text(mail.subject ?? '',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.black, fontSize: 18)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    if (width > 500)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: btnActions(context, mailUIProvider, mail),
-                      ),
-                    const SizedBox(height: 5),
-                    Text(mail.subject ?? '',
-                        textAlign: TextAlign.center,
-                        style:
-                            const TextStyle(color: Colors.black, fontSize: 18)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(child: HeaderMailDetails(mail)),
-                        expandedBtn,
-                      ],
-                    )
+                    Expanded(child: HeaderMailDetails(mail)),
+                    expandedBtn,
                   ],
-                );
-              },
+                )
+              ],
             )
           : Align(alignment: Alignment.bottomRight, child: expandedBtn),
     );

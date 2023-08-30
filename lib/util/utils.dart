@@ -3,7 +3,7 @@ import 'package:async/async.dart';
 
 CancelableOperation<void>? _operation;
 
-Future<void> performAsyncOperation(Future<void> callBackFunc) async {
+Future<void> debounceOperation(Future<void> callBackFunc) async {
   _operation?.cancel();
 
   _operation = CancelableOperation.fromFuture(

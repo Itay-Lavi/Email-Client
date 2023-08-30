@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../config/global_var.dart';
-import '../../../providers/mail/mail_list.dart';
+import '../../../providers/mail/list/provider.dart';
 import '../../../providers/mail/mailbox.dart';
+import '../widgets/search_field.dart';
 
 class MailBoxHeader extends StatelessWidget {
   const MailBoxHeader({super.key});
@@ -18,27 +19,18 @@ class MailBoxHeader extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(15, 30, 15, 0),
         child: Column(
           children: [
-            Consumer<MailListProvider>(
-              builder: (context, prov, _) => Row(children: [
-                Expanded(
-                    child: TextField(
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    hintText: 'Search',
-                    suffixIcon: IconButton(
-                        icon: const Icon(Icons.search), onPressed: () => prov),
-                  ),
-                )),
-                const SizedBox(width: 5),
-                IconButton(
-                    onPressed: () =>
-                        prov.getEmails('0:${prov.mails!.length}', true),
-                    icon: const Icon(Icons.refresh)),
-                const SizedBox(width: 5),
-                IconButton(
-                    onPressed: () {}, icon: const Icon(Icons.select_all)),
-              ]),
-            ),
+            Row(children: [
+              Expanded(
+                  child: SearchField(
+                searchFieldController: TextEditingController(),
+              )),
+              const SizedBox(width: 5),
+              Consumer<MailListProvider>(
+                  builder: (context, mailProv, _) => IconButton(
+                      onPressed: () => mailProv.getEmails(
+                          '0:${mailProv.mails!.length}', true),
+                      icon: const Icon(Icons.refresh))),
+            ]),
             const SizedBox(
               height: 15,
             ),

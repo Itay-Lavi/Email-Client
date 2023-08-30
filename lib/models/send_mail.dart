@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 class MailDataModel {
   String from;
   List<String> to;
@@ -14,11 +13,23 @@ class MailDataModel {
     required this.html,
   });
 
+  MailDataModel copyWith({
+    String? from,
+    List<String>? to,
+    String? subject,
+    String? html,
+  }) {
+    return MailDataModel(
+      from: from ?? this.from,
+      to: to ?? this.to,
+      subject: subject ?? this.subject,
+      html: html ?? this.html,
+    );
+  }
+
   bool validate() {
     bool isEmailValid(String email) {
-      // Basic email pattern check
       if (email.isEmpty) return false;
-
       final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$');
       return emailRegex.hasMatch(email);
     }

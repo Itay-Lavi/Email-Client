@@ -1,14 +1,14 @@
 import 'package:email_client/data/databases/folder.dart';
+import 'package:email_client/services/folder_api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../data/helper.dart';
-import '../../services/mail_api.dart';
 import '../../models/mail_folder.dart';
 import '../../providers/mail/accounts.dart';
-import '../../providers/ui_provider.dart';
+import 'mail_ui.dart';
 
-class MailBoxProvider extends ChangeNotifier {
+class MailBoxProvider with ChangeNotifier {
   final BuildContext _context;
   FolderDatabase? _folderDb;
   final MailAccountsProvider? _accountProvider;
@@ -30,6 +30,16 @@ class MailBoxProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> initializeFolders() async {
+    final allFolders = await _folderDb!
+        .getFoldersByAccount(_accountProvider!.currentAccount!.email);
+    if (allFolders.isNotEmpty) {
+      _folders = [...allFolders];
+      setCurrentFolder(getInboxFolder());
+    }
+    await getFolders();
+  }
+
   int totalUnseenCount(List<MailFolderModel> folders) {
     int totalCount = 0;
     for (final folder in folders) {
@@ -46,24 +56,15 @@ class MailBoxProvider extends ChangeNotifier {
       return;
     }
     currentFolder = folder;
-    _context.read<UIProvider>().controlIsLoading(false);
+    _context.read<MailUIProvider>().controlShowFilteredMails(false);
     notifyListeners();
   }
 
-  Future<void> initializeFolders() async {
-    final allFolders = await _folderDb!
-        .getFoldersByAccount(_accountProvider!.currentAccount!.email);
-    if (allFolders.isNotEmpty) {
-      _folders = [...allFolders];
-      setCurrentFolder(getInboxFolder());
-    }
-    await getFolders();
-  }
-
   Future<void> getFolders() async {
-    final mailApi = MailApi(account: _accountProvider!.currentAccount!);
+    final folderApi =
+        FolderApiService(account: _accountProvider!.currentAccount!);
     try {
-      final response = await mailApi.getFolders();
+      final response = await folderApi.getFolders();
 
       final fetchedFolders =
           response.map((folder) => MailFolderModel.fromMap(folder)).toList();
@@ -76,13 +77,11 @@ class MailBoxProvider extends ChangeNotifier {
 
       setCurrentFolder(getInboxFolder());
 
-      if (_folders != null && _folders!.isNotEmpty) {
+      if (_folders!.isNotEmpty) {
         _folderDb!
             .setMailFolders(_folders!, _accountProvider!.currentAccount!.email);
       }
-    } catch (e) {
-      print(e);
-    }
+    } catch (_) {}
 
     notifyListeners();
   }

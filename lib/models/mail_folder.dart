@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 // ignore: must_be_immutable
 class MailFolderModel extends Equatable with ChangeNotifier {
+  int? id;
   final String name;
   bool favorite;
   String? callname;
@@ -13,6 +14,7 @@ class MailFolderModel extends Equatable with ChangeNotifier {
   final List<MailFolderModel>? children;
 
   MailFolderModel({
+    required this.id,
     required this.name,
     required this.children,
     this.favorite = false,
@@ -21,22 +23,17 @@ class MailFolderModel extends Equatable with ChangeNotifier {
     this.unseenCount,
   });
 
+  setUnseenCount(int count) {
+    unseenCount = count;
+    notifyListeners();
+  }
+
   @override
-  List<Object> get props => [name, favorite];
+  List<Object> get props => [name, callname!];
 
   static bool areListsEqual(
       List<MailFolderModel> list1, List<MailFolderModel> list2) {
-    if (list1.length != list2.length) {
-      return false;
-    }
-
-    for (int i = 0; i < list1.length; i++) {
-      if (list1[i] != list2[i]) {
-        return false;
-      }
-    }
-
-    return true;
+    return listEquals(list1, list2);
   }
 
   // Recursive function to find a folder by specialUseAttrib in a list of folders
@@ -45,7 +42,8 @@ class MailFolderModel extends Equatable with ChangeNotifier {
     if (folders == null) return null;
 
     for (final folder in folders) {
-      if (folder.specialUseAttrib == specialUseAttrib) {
+      if (folder.specialUseAttrib != null &&
+          folder.specialUseAttrib!.contains(specialUseAttrib)) {
         return folder;
       }
 
@@ -57,11 +55,6 @@ class MailFolderModel extends Equatable with ChangeNotifier {
     }
 
     return null;
-  }
-
-  setUnseenCount(int count) {
-    unseenCount = count;
-    notifyListeners();
   }
 
   Map<String, dynamic> toMap() {
@@ -90,6 +83,7 @@ class MailFolderModel extends Equatable with ChangeNotifier {
         parentName != null ? '$parentName/${map['name']}' : map['name'];
 
     return MailFolderModel(
+      id: map['id'],
       name: map['name'],
       favorite: map['favorite'] == 1,
       callname: callname,

@@ -1,25 +1,36 @@
 import 'package:flutter/material.dart';
 
 const desktopWidth = 1200;
+
+const tabletHeight = 600;
 const tabletWidth = 830;
+
+const wideMobileWidth = 500;
 
 class Responsive extends StatelessWidget {
   final Widget? mobile;
+  final Widget wideMobile;
   final Widget tablet;
   final Widget desktop;
 
   const Responsive({
     Key? key,
     this.mobile,
+    required this.wideMobile,
     required this.tablet,
     required this.desktop,
   }) : super(key: key);
 
-// This size work fine on my design, maybe you need some customization depends on your design
-
-  // This isMobile, isTablet, isDesktop help us later
-  static bool isMobile(BuildContext context) =>
+  static bool isAllMobile(BuildContext context) =>
       MediaQuery.of(context).size.width < tabletWidth;
+
+  static bool isMobile(BuildContext context) =>
+      MediaQuery.of(context).size.width < wideMobileWidth ||
+      MediaQuery.of(context).size.height < tabletHeight;
+
+  static bool isWideMobile(BuildContext context) =>
+      MediaQuery.of(context).size.width < tabletWidth &&
+      MediaQuery.of(context).size.width >= wideMobileWidth;
 
   static bool isTablet(BuildContext context) =>
       MediaQuery.of(context).size.width < desktopWidth &&

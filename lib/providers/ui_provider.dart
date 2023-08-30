@@ -5,14 +5,19 @@ class UIProvider with ChangeNotifier {
   final BuildContext _context;
   UIProvider(this._context);
 
+  bool _initialized = false;
+  bool get initialized => _initialized;
+
   bool _sideMenuIsOpen = true;
   bool get sideMenuIsOpen => _sideMenuIsOpen;
 
   final GlobalKey<ScaffoldState> _homeScaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<ScaffoldState> get homeScaffoldKey => _homeScaffoldKey;
 
-  bool _isLoading = true;
-  bool get isLoading => _isLoading;
+  void appInitialized(bool value) {
+    _initialized = value;
+    notifyListeners();
+  }
 
   void controlSideMenu() {
     if (!Responsive.isDesktop(_context)) {
@@ -29,10 +34,5 @@ class UIProvider with ChangeNotifier {
     } else if (_homeScaffoldKey.currentState!.isDrawerOpen) {
       _homeScaffoldKey.currentState!.closeDrawer();
     }
-  }
-
-  void controlIsLoading(bool isLoadingState) {
-    _isLoading = isLoadingState;
-    notifyListeners();
   }
 }

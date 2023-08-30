@@ -28,13 +28,13 @@ class SideMenu extends StatelessWidget {
       duration: const Duration(milliseconds: 100),
       width: width,
       color: Theme.of(context).colorScheme.primary,
-      child: const Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: SideMenuContent(),
+            child: SideMenuContent(isDrawer),
           ),
-          ButtomNavBar()
+          const ButtomNavBar()
         ],
       ),
     );

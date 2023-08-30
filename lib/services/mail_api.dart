@@ -8,14 +8,14 @@ import 'package:email_client/util/http.dart';
 
 import '../config/global_var.dart';
 
-class MailApi {
+class MailApiService {
   final MailAccountModel account;
   final MailDataModel? emailData;
   final String? folderName;
   final String? fetchSlice;
   Map<String, String> headers = {};
 
-  MailApi({
+  MailApiService({
     required this.account,
     this.emailData,
     this.folderName,
@@ -25,15 +25,24 @@ class MailApi {
       throw ArgumentError('JWT token cannot be null.');
     }
     headers = {
-      'Content-Type': 'application/json',
       'Authorization': account.jwt!,
     };
   }
 
   Future<Map<String, dynamic>> getMails() async {
-    final queryParams = {'fetchSlice': fetchSlice, 'mailBoxName': folderName};
+    final queryParams = {'fetchSlice': fetchSlice, 'mailbox': folderName};
     final url =
         Uri.http(hostname, '/mail').replace(queryParameters: queryParams);
+
+    final response = await httpRequest(url, headers, HttpMethod.get);
+
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getMailsByText(String text) async {
+    final queryParams = {'mailbox': folderName, 'filter': text};
+    final url = Uri.http(hostname, '/mail/filter')
+        .replace(queryParameters: queryParams);
 
     return await httpRequest(url, headers, HttpMethod.get);
   }
@@ -54,13 +63,5 @@ class MailApi {
     final body = {'folder': folderCallname};
     final url = Uri.http(hostname, '/mail/move/$mailId');
     await httpRequest(url, headers, HttpMethod.put, jsonEncode(body));
-  }
-
-  Future<List<dynamic>> getFolders() async {
-    final url = Uri.http(hostname, '/folder');
-
-    final body = await httpRequest(url, headers, HttpMethod.get);
-
-    return body['response'] as List<dynamic>;
   }
 }

@@ -1,15 +1,17 @@
-import 'package:email_client/models/mail.dart';
-import 'package:email_client/providers/mail/mail_list.dart';
-import 'package:email_client/screens/home/mailbox/item/group_item_header.dart';
-import 'package:email_client/screens/home/mailbox/item/item.dart';
-import 'package:email_client/util/async.dart';
+import 'package:email_client/util/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:group_list_view/group_list_view.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../models/mail.dart';
+import '../../../providers/mail/list/provider.dart';
+import '../../../providers/mail/mail_ui.dart';
+import '../../../screens/home/mailbox/item/group_item_header.dart';
+import '../../../screens/home/mailbox/item/item.dart';
+
 import '../../../util/mail_logic.dart';
-import '../../../widgets/snackbar.dart';
+import './bottom_modal.dart';
 
 class MailBoxListView extends StatefulWidget {
   const MailBoxListView({super.key});
@@ -21,6 +23,7 @@ class MailBoxListView extends StatefulWidget {
 class _MailBoxListViewState extends State<MailBoxListView> {
   final ScrollController scrollController = ScrollController();
   List<MailModel>? mails = [];
+  bool showFilteredMails = false;
   bool newEmailsIsLoading = false;
 
   @override
@@ -39,23 +42,35 @@ class _MailBoxListViewState extends State<MailBoxListView> {
     if (scrollController.position.pixels ==
             scrollController.position.maxScrollExtent &&
         !newEmailsIsLoading) {
-      newEmailsIsLoading = true;
-      showButtonSnackbar(context);
+      setState(() {
+        newEmailsIsLoading = true;
+      });
+
       try {
-        await performAsyncOperation(context
-            .read<MailListProvider>()
-            .getEmails('${mails!.length}:${mails!.length + 30}'));
-      } catch (_) {
-      } finally {
+        await _loadMoreEmails();
+      } catch (_) {}
+      setState(() {
         newEmailsIsLoading = false;
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      }
+      });
+    }
+  }
+
+  Future<void> _loadMoreEmails() async {
+    final mailListProv = context.read<MailListProvider>();
+    final mails = mailListProv.mails;
+    if (mails != null) {
+      await debounceOperation(
+          mailListProv.getEmails('${mails.length}:${mails.length + 30}'));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    mails = context.watch<MailListProvider>().mails;
+    final mailListProv = context.watch<MailListProvider>();
+    showFilteredMails =
+        context.select<MailUIProvider, bool>((prov) => prov.showFilteredMails);
+    mails = showFilteredMails ? mailListProv.filteredMails : mailListProv.mails;
+
     Map<String, List<MailModel>> groupedEmails =
         groupAndSortEmails(mails ?? []);
 
@@ -65,21 +80,42 @@ class _MailBoxListViewState extends State<MailBoxListView> {
       );
     }
 
-    return GroupListView(
-        controller: scrollController,
-        sectionsCount: groupedEmails.keys.toList().length,
-        countOfItemInSection: (int section) {
-          return groupedEmails.values.toList()[section].length;
-        },
-        itemBuilder: (BuildContext ctx, IndexPath i) =>
-            ChangeNotifierProvider<MailModel>.value(
-                value: groupedEmails.values.toList()[i.section][i.index],
-                child: const MailBoxItem()),
-        groupHeaderBuilder: (BuildContext _, int section) {
-          DateFormat format = DateFormat('dd/MM/yyyy');
-          final date = format.parse(groupedEmails.keys.toList()[section]);
-          return GroupItemHeader(date);
-        },
-        sectionSeparatorBuilder: (_, __) => const Divider(height: 1));
+    if (groupedEmails.isEmpty) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/images/no-data.png',
+            scale: 4,
+          ),
+          const Text('No Emails Found!')
+        ],
+      );
+    }
+
+    return Column(
+      children: [
+        Expanded(
+          child: GroupListView(
+              controller: scrollController,
+              sectionsCount: groupedEmails.keys.toList().length,
+              countOfItemInSection: (int section) {
+                return groupedEmails.values.toList()[section].length;
+              },
+              itemBuilder: (BuildContext ctx, IndexPath i) {
+                return ChangeNotifierProvider<MailModel>.value(
+                    value: groupedEmails.values.toList()[i.section][i.index],
+                    child: const MailBoxItem());
+              },
+              groupHeaderBuilder: (BuildContext _, int section) {
+                DateFormat format = DateFormat('dd/MM/yyyy');
+                final date = format.parse(groupedEmails.keys.toList()[section]);
+                return GroupItemHeader(date);
+              },
+              sectionSeparatorBuilder: (_, __) => const Divider(height: 1)),
+        ),
+        BottomListviewModal(newEmailsIsLoading: newEmailsIsLoading)
+      ],
+    );
   }
 }

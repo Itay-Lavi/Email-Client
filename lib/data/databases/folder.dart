@@ -1,5 +1,4 @@
-import 'dart:convert';
-
+import 'package:email_client/data/helper.dart';
 import 'package:email_client/models/mail_folder.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -14,31 +13,33 @@ class FolderDatabase {
     List<MailFolderModel> folders,
     String currentAccountEmail,
   ) async {
-    await deleteFolderByEmail(currentAccountEmail);
+    await deleteFoldersByEmail(currentAccountEmail);
 
-    for (int i = 0; i < folders.length; i++) {
-      // Convert children MailFolderModel instances to JSON string
-      String? childrenJson;
-      if (folders[i].children != null) {
-        List<Map<String, dynamic>> childrenList =
-            folders[i].children!.map((child) => child.toMap()).toList();
-        childrenJson = json.encode(childrenList);
+    Future<void> insertFoldersRecursively(List<MailFolderModel> folders,
+        [int? parentId]) async {
+      for (final folder in folders) {
+        final folderId = await insertFolder(FolderDbModel(
+            id: folder.id,
+            name: folder.name,
+            accountEmail: currentAccountEmail,
+            favorite: folder.favorite ? 1 : 0,
+            specialUseAttrib: folder.specialUseAttrib,
+            unseenCount: folder.unseenCount,
+            parentId: parentId));
+        folder.id = folderId;
+
+        if (folder.children == null || folder.children!.isEmpty) continue;
+
+        await insertFoldersRecursively(folder.children!, folderId);
       }
-
-      // Insert the current folder and its children into the database
-      await insertFolder(FolderDbModel(
-        name: folders[i].name,
-        accountEmail: currentAccountEmail,
-        favorite: folders[i].favorite ? 1 : 0,
-        unseenCount: folders[i].unseenCount,
-        childrenJson: childrenJson,
-      ));
     }
+
+    insertFoldersRecursively(folders);
   }
 
-  Future<void> insertFolder(FolderDbModel folder) async {
-    await _db.insert(
-      'folders',
+  Future<int> insertFolder(FolderDbModel folder) async {
+    return await _db.insert(
+      folderTableName,
       folder.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -46,7 +47,7 @@ class FolderDatabase {
 
   Future<void> updateFolder(FolderDbModel folder) async {
     await _db.update(
-      'folders',
+      folderTableName,
       folder.toMap(),
       where: 'name = ?',
       whereArgs: [folder.name],
@@ -55,43 +56,67 @@ class FolderDatabase {
 
   Future<void> deleteFolderByName(String name) async {
     await _db.delete(
-      'folders',
+      folderTableName,
       where: 'name = ?',
       whereArgs: [name],
     );
   }
 
-  Future<void> deleteFolderByEmail(String email) async {
+  Future<void> deleteFoldersByEmail(String email) async {
     await _db.delete(
-      'folders',
+      folderTableName,
       where: 'account_email = ?',
       whereArgs: [email],
     );
   }
 
-  Future<List<MailFolderModel>> getFoldersByAccount(
-    String accountEmail,
-  ) async {
-    final List<Map<String, dynamic>> maps = await _db.query('folders',
-        where: 'account_email = ?', whereArgs: [accountEmail]);
+  Future<List<MailFolderModel>> getFoldersByAccount(String accountEmail) async {
+    final List<Map<String, dynamic>> fethcedFolders = await _db.query(
+      folderTableName,
+      where: 'account_email = ?',
+      whereArgs: [accountEmail],
+    );
 
-    return List.generate(maps.length, (i) {
-      //print('from db ${maps[i]}');
-      final jsonChildren = maps[i]['children_json'] as String?;
+    final List<FolderDbModel> dbFolders =
+        fethcedFolders.map((map) => FolderDbModel.fromMap(map)).toList();
 
-      List<dynamic>? children;
-      if (jsonChildren != null) {
-        children = jsonDecode(jsonChildren);
+    Map<int, List<FolderDbModel>> folderMap = {};
+    List<FolderDbModel> rootFolders = [];
+
+    for (final dbFolder in dbFolders) {
+      final parentId = dbFolder.parentId;
+
+      if (parentId == null) {
+        rootFolders.add(dbFolder);
+      } else {
+        folderMap[parentId] ??= [];
+        folderMap[parentId]!.add(dbFolder);
       }
+    }
 
-      return MailFolderModel.fromMap({
-        "name": maps[i]['name'],
-        "callname": maps[i]['callname'],
-        "specialUseAttrib": maps[i]['special_use_attrib'],
-        "favorite": maps[i]['favorite'] == 1,
-        "unseenCount": maps[i]['unseen_count'] ?? 0,
-        "children": children
-      });
-    });
+    List<MailFolderModel> mailFolders = [];
+
+    for (final rootFolder in rootFolders) {
+      final finalFolderMap = _convertToMailFolder(rootFolder, folderMap);
+      mailFolders.add(MailFolderModel.fromMap(finalFolderMap));
+    }
+
+    return mailFolders;
+  }
+
+  Map<String, dynamic> _convertToMailFolder(
+      FolderDbModel dbFolder, Map<int, List<FolderDbModel>> folderMap) {
+    final children = folderMap[dbFolder.id] ?? [];
+
+    return {
+      'id': dbFolder.id,
+      "name": dbFolder.name,
+      "specialUseAttrib": dbFolder.specialUseAttrib,
+      "favorite": dbFolder.favorite,
+      "unseenCount": dbFolder.unseenCount,
+      "children": children
+          .map((child) => _convertToMailFolder(child, folderMap))
+          .toList(),
+    };
   }
 }

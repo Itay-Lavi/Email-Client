@@ -9,6 +9,9 @@ class MailUIProvider with ChangeNotifier {
   bool _mailEditorIsOpen = false;
   bool get mailEditorIsOpen => _mailEditorIsOpen;
 
+  bool _showFilteredMails = false;
+  bool get showFilteredMails => _showFilteredMails;
+
   MailDataModel _mailData =
       MailDataModel(from: '', to: [], subject: '', html: '');
   MailDataModel get mailData => _mailData;
@@ -24,8 +27,23 @@ class MailUIProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setMailData(MailDataModel mailData) {
-    _mailData = mailData;
+  void updateMailData({MailDataModel? mail, Map<String, dynamic>? updates}) {
+    if (mail != null) {
+      _mailData = mail;
+    }
+    if (updates != null) {
+      _mailData = _mailData.copyWith(
+        from: updates['from'] ?? _mailData.from,
+        to: updates['to'] ?? _mailData.to,
+        subject: updates['subject'] ?? _mailData.subject,
+        html: updates['html'] ?? _mailData.html,
+      );
+    }
+  }
+
+  void controlShowFilteredMails([bool? state]) {
+    if (_showFilteredMails == state) return;
+    _showFilteredMails = state ??= !_showFilteredMails;
     notifyListeners();
   }
 }

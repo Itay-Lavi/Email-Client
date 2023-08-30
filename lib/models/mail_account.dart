@@ -19,16 +19,4 @@ class MailAccountModel with ChangeNotifier {
     unseenCount = count;
     notifyListeners();
   }
-
-  // void updateSpecialUseAttribTypes(List<MailFolderModel>? folders) {
-  //   if (folders == null) return;
-
-  //   for (final folder in folders) {
-  //     // Check if the folder's name matches any of the specialUseAttribTypes keys
-  //     if (specialUseAttribTypes.containsKey(folder.specialUseAttrib)) {
-  //       // Update the value for the matching key with the folder's value
-  //       specialUseAttribTypes[folder.specialUseAttrib!] = 'folder.callname';
-  //     }
-  //   }
-  // }
 }
