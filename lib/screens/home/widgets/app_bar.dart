@@ -4,6 +4,7 @@ import 'package:email_client/models/mail.dart';
 import 'package:email_client/providers/mail/mail_ui.dart';
 import 'package:email_client/screens/home/mail/view/header/actions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/mail/list/provider.dart';
@@ -23,8 +24,8 @@ class _HomeAppBarState extends State<HomeAppBar> {
   Timer? _timer;
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
-  late bool _showFilteredMails;
   bool _searchIsActive = false;
+
   _changeSearchStatus() {
     setState(() {
       _searchIsActive = !_searchIsActive;
@@ -45,15 +46,27 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
   void _onFocusChange() {
     if (!_searchFocusNode.hasFocus &&
-        !_showFilteredMails &&
         _searchIsActive &&
         _searchController.text.isEmpty) {
       _changeSearchStatus();
     }
   }
 
+  void setupSystemUIOverlay(BuildContext context, Color primaryColor) {
+    final mySystemTheme = SystemUiOverlayStyle.light.copyWith(
+      systemNavigationBarColor: const Color.fromARGB(255, 8, 53, 91),
+      statusBarBrightness: Brightness.dark,
+      statusBarColor: primaryColor,
+    );
+    SystemChrome.setSystemUIOverlayStyle(mySystemTheme);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final primayColor = Theme.of(context).colorScheme.primary;
+
+    setupSystemUIOverlay(context, primayColor);
+
     final mailListProvider = context.read<MailListProvider>();
     final mailEditorIsOpen =
         context.select<MailUIProvider, bool>((prov) => prov.mailEditorIsOpen);
@@ -61,13 +74,11 @@ class _HomeAppBarState extends State<HomeAppBar> {
         .select<MailListProvider, MailModel?>((prov) => prov.selectedMail);
     final mailIsSelected = selectedMail != null;
 
-    _showFilteredMails =
-        context.select<MailUIProvider, bool>((prov) => prov.showFilteredMails);
-
     final mailboxName = context.select<MailBoxProvider, String>(
         (prov) => prov.currentFolder?.name ?? 'inbox');
+
     return AppBar(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: primayColor,
       title: (!mailIsSelected && !_searchIsActive && !mailEditorIsOpen)
           ? Text(mailboxName)
           : mailEditorIsOpen

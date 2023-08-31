@@ -45,30 +45,39 @@ class HomeScreen extends StatelessWidget {
     return SafeArea(
       child: !initialized || curAccount == null
           ? const SplashScreen()
-          : Scaffold(
-              key: context.read<UIProvider>().homeScaffoldKey,
-              appBar: isMobile ? const HomeAppBar() : null,
-              drawer: const SideMenu(isDrawer: true),
-              body: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (!isMobile) const SideMenu(),
-                  if (isAllMobile && !mailIsSelected && !mailEditorIsOpen)
-                    const Expanded(child: Mailbox()),
-                  if (!isAllMobile) const Mailbox(),
-                  if (!isAllMobile ||
-                      (!mailEditorIsOpen && mailIsSelected) ||
-                      mailEditorIsOpen)
-                    Expanded(
-                        child: mailEditorIsOpen
-                            ? const MailEditor()
-                            : const MailView())
-                ],
+          : WillPopScope(
+              onWillPop: () async {
+                if (isAllMobile && mailIsSelected) {
+                  context.read<MailListProvider>().selectCurrentEmail(null);
+                  return false;
+                }
+                return true;
+              },
+              child: Scaffold(
+                key: context.read<UIProvider>().homeScaffoldKey,
+                appBar: isMobile ? const HomeAppBar() : null,
+                drawer: const SideMenu(isDrawer: true),
+                body: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!isMobile) const SideMenu(),
+                    if (isAllMobile && !mailIsSelected && !mailEditorIsOpen)
+                      const Expanded(child: Mailbox()),
+                    if (!isAllMobile) const Mailbox(),
+                    if (!isAllMobile ||
+                        (!mailEditorIsOpen && mailIsSelected) ||
+                        mailEditorIsOpen)
+                      Expanded(
+                          child: mailEditorIsOpen
+                              ? const MailEditor()
+                              : const MailView())
+                  ],
+                ),
+                floatingActionButton:
+                    isAllMobile && !mailIsSelected && !mailEditorIsOpen
+                        ? const HomeFloatingBtn()
+                        : null,
               ),
-              floatingActionButton:
-                  isAllMobile && !mailIsSelected && !mailEditorIsOpen
-                      ? const HomeFloatingBtn()
-                      : null,
             ),
     );
   }

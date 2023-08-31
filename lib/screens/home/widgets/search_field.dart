@@ -33,6 +33,10 @@ class SearchField extends StatelessWidget {
       cursorColor: color,
       style: TextStyle(fontSize: 16, color: color),
       controller: searchFieldController,
+      textInputAction: TextInputAction.search,
+      onSubmitted: (_) {
+        searchEmailsByText();
+      },
       decoration: InputDecoration(
         hintStyle: TextStyle(color: color),
         suffixIconColor: color,

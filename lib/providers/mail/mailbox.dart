@@ -51,13 +51,14 @@ class MailBoxProvider with ChangeNotifier {
     return totalCount;
   }
 
-  void setCurrentFolder(MailFolderModel folder) {
+  bool setCurrentFolder(MailFolderModel folder) {
     if (currentFolder == folder) {
-      return;
+      return false;
     }
     currentFolder = folder;
     _context.read<MailUIProvider>().controlShowFilteredMails(false);
     notifyListeners();
+    return true;
   }
 
   Future<void> getFolders() async {
@@ -75,12 +76,13 @@ class MailBoxProvider with ChangeNotifier {
       }
       _folders = [...fetchedFolders];
 
-      setCurrentFolder(getInboxFolder());
-
       if (_folders!.isNotEmpty) {
         _folderDb!
             .setMailFolders(_folders!, _accountProvider!.currentAccount!.email);
       }
+
+      final folderHasSet = setCurrentFolder(getInboxFolder());
+      if (folderHasSet) return;
     } catch (_) {}
 
     notifyListeners();
