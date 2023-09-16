@@ -97,22 +97,22 @@ class _MailBoxListViewState extends State<MailBoxListView> {
       children: [
         Expanded(
           child: GroupListView(
-              controller: scrollController,
-              sectionsCount: groupedEmails.keys.toList().length,
-              countOfItemInSection: (int section) {
-                return groupedEmails.values.toList()[section].length;
-              },
-              itemBuilder: (BuildContext ctx, IndexPath i) {
-                return ChangeNotifierProvider<MailModel>.value(
-                    value: groupedEmails.values.toList()[i.section][i.index],
-                    child: const MailBoxItem());
-              },
-              groupHeaderBuilder: (BuildContext _, int section) {
-                DateFormat format = DateFormat('dd/MM/yyyy');
-                final date = format.parse(groupedEmails.keys.toList()[section]);
-                return GroupItemHeader(date);
-              },
-              sectionSeparatorBuilder: (_, __) => const Divider(height: 1)),
+            controller: scrollController,
+            sectionsCount: groupedEmails.keys.toList().length,
+            countOfItemInSection: (int section) {
+              return groupedEmails.values.toList()[section].length;
+            },
+            itemBuilder: (BuildContext ctx, IndexPath i) {
+              return ChangeNotifierProvider<MailModel>.value(
+                  value: groupedEmails.values.toList()[i.section][i.index],
+                  child: const MailBoxItem());
+            },
+            groupHeaderBuilder: (BuildContext _, int section) {
+              DateFormat format = DateFormat('dd/MM/yyyy');
+              final date = format.parse(groupedEmails.keys.toList()[section]);
+              return GroupItemHeader(date);
+            },
+          ),
         ),
         BottomListviewModal(newEmailsIsLoading: newEmailsIsLoading)
       ],

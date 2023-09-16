@@ -30,8 +30,7 @@ class CustomTextField extends StatelessWidget {
         labelText: labelText,
         floatingLabelStyle: const TextStyle(color: Colors.transparent),
       ),
-      style:
-          const TextStyle(color: Color.fromARGB(255, 84, 84, 84), fontSize: 16),
+      style: const TextStyle(fontSize: 16),
       enabled: enabled,
     );
   }

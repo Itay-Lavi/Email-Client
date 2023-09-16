@@ -27,7 +27,7 @@ class SideMenu extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 100),
       width: width,
-      color: Theme.of(context).colorScheme.primary,
+      color: Theme.of(context).colorScheme.secondary,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../models/mail_folder.dart';
-import '../../../../providers/mail/mailbox.dart';
+import '../../../../providers/mail/mail_folder.dart';
 
 import './item.dart';
 import 'inkwell_list_tile.dart';
@@ -14,8 +14,8 @@ class RecursiveFolderList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mailBoxProv = context.read<MailBoxProvider>();
-    final currentFolderName = context.select<MailBoxProvider, String?>(
+    final mailBoxProv = context.read<MailFolderProvider>();
+    final currentFolderName = context.select<MailFolderProvider, String?>(
       (prov) => prov.currentFolder?.name ?? '',
     );
     final folder = context.watch<MailFolderModel>();

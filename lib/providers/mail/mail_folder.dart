@@ -5,10 +5,10 @@ import 'package:provider/provider.dart';
 
 import '../../data/helper.dart';
 import '../../models/mail_folder.dart';
-import '../../providers/mail/accounts.dart';
+import 'accounts.dart';
 import 'mail_ui.dart';
 
-class MailBoxProvider with ChangeNotifier {
+class MailFolderProvider with ChangeNotifier {
   final BuildContext _context;
   FolderDatabase? _folderDb;
   final MailAccountsProvider? _accountProvider;
@@ -18,7 +18,7 @@ class MailBoxProvider with ChangeNotifier {
 
   MailFolderModel? currentFolder;
 
-  MailBoxProvider(this._context, this._accountProvider) {
+  MailFolderProvider(this._context, this._accountProvider) {
     void init() async {
       final db = await DatabaseHelper().database;
       _folderDb = FolderDatabase(db);
@@ -37,7 +37,7 @@ class MailBoxProvider with ChangeNotifier {
       _folders = [...allFolders];
       setCurrentFolder(getInboxFolder());
     }
-    await getFolders();
+    getFolders();
   }
 
   int totalUnseenCount(List<MailFolderModel> folders) {
@@ -83,9 +83,8 @@ class MailBoxProvider with ChangeNotifier {
 
       final folderHasSet = setCurrentFolder(getInboxFolder());
       if (folderHasSet) return;
+      notifyListeners();
     } catch (_) {}
-
-    notifyListeners();
   }
 
   MailFolderModel getInboxFolder() {

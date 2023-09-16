@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/mail/list/provider.dart';
-import '../../../providers/mail/mailbox.dart';
+import '../../../providers/mail/mail_folder.dart';
 import 'search_field.dart';
 
 class HomeAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -74,11 +74,10 @@ class _HomeAppBarState extends State<HomeAppBar> {
         .select<MailListProvider, MailModel?>((prov) => prov.selectedMail);
     final mailIsSelected = selectedMail != null;
 
-    final mailboxName = context.select<MailBoxProvider, String>(
+    final mailboxName = context.select<MailFolderProvider, String>(
         (prov) => prov.currentFolder?.name ?? 'inbox');
 
     return AppBar(
-      backgroundColor: primayColor,
       title: (!mailIsSelected && !_searchIsActive && !mailEditorIsOpen)
           ? Text(mailboxName)
           : mailEditorIsOpen
@@ -95,7 +94,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
         if (mailEditorIsOpen)
           IconButton(
             icon: const Icon(Icons.send),
-            onPressed: mailListProvider.sendEmail,
+            onPressed: () => mailListProvider.sendEmail(context),
           ),
         if (mailIsSelected && !mailEditorIsOpen)
           ChangeNotifierProvider.value(

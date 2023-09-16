@@ -14,11 +14,11 @@ class AuthScreen extends StatelessWidget {
           Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [
-              Color.fromARGB(255, 212, 234, 252),
-              Colors.white,
-              Color.fromARGB(255, 255, 238, 213)
+              const Color.fromARGB(255, 212, 234, 252),
+              Theme.of(context).colorScheme.background,
+              const Color.fromARGB(255, 255, 238, 213)
             ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
           ),
           const Align(alignment: Alignment.center, child: AuthForm())

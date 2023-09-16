@@ -16,7 +16,7 @@ class InkWellListTile extends StatelessWidget {
     return Padding(
         padding: EdgeInsets.symmetric(vertical: padding),
         child: Material(
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.secondary,
             child: InkWell(
                 splashColor: Theme.of(context).splashColor,
                 onTap: onTap,

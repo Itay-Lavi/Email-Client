@@ -50,9 +50,9 @@ class MailAccountsProvider with ChangeNotifier {
   }
 
   Future<void> addMailAccount(MailAccountModel account) async {
-    // final accountIsExist =
-    //     _mailAccounts.indexWhere((account) => account.email == account.email) <0;
-    // if (accountIsExist) return;
+    final accountIsExist =
+        _mailAccounts.indexWhere((acc) => acc.email == account.email) > -1;
+    if (accountIsExist) throw 'Account Already Exist';
 
     final token = await AccountApiService(account: account).signin();
     final newAccount =
@@ -64,7 +64,6 @@ class MailAccountsProvider with ChangeNotifier {
     _mailAccounts.add(newAccount);
     setCurrentAccount(newAccount);
     notifyListeners();
-    return token;
   }
 
   void removeMailAccount(MailAccountModel account) async {

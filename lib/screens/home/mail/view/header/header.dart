@@ -34,7 +34,7 @@ class MailHeader extends StatelessWidget {
                 const SizedBox(height: 5),
                 Text(mail.subject ?? '',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.black, fontSize: 18)),
+                    style: const TextStyle(fontSize: 18)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

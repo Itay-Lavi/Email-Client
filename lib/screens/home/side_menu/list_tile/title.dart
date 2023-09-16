@@ -7,17 +7,15 @@ class TitleListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = Theme.of(context).colorScheme.background;
+    const titleColor = Colors.white;
     return ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 8),
         leading: Icon(
           icon,
-          color: backgroundColor,
+          color: titleColor,
         ),
         title: Text(title, overflow: TextOverflow.clip),
-        titleTextStyle: Theme.of(context)
-            .textTheme
-            .titleLarge!
-            .apply(color: backgroundColor));
+        titleTextStyle:
+            Theme.of(context).textTheme.titleLarge!.apply(color: titleColor));
   }
 }

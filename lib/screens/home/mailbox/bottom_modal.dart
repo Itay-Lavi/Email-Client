@@ -11,7 +11,7 @@ class BottomListviewModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 20,
+      elevation: 15,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         height: newEmailsIsLoading ? 70 : 0,

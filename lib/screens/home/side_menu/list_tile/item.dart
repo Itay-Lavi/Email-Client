@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../models/mail_folder.dart';
 
+const _textColor = Colors.white;
+
 Widget _selectedBorder(bool selected, Widget widget) {
   return Container(
       decoration: BoxDecoration(
@@ -26,7 +28,6 @@ class AccountListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = Theme.of(context).colorScheme.background;
     final account = context.watch<MailAccountModel>();
 
     return _selectedBorder(
@@ -37,20 +38,20 @@ class AccountListTile extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .titleMedium!
-                  .apply(color: backgroundColor)),
+                  .apply(color: _textColor)),
           subtitle: Text(
             account.email,
             style: Theme.of(context)
                 .textTheme
                 .labelMedium!
-                .copyWith(color: Colors.white),
+                .copyWith(color: _textColor),
             overflow: TextOverflow.ellipsis,
           ),
           trailing: Text(
               (account.unseenCount ?? 0) > 0
                   ? account.unseenCount.toString()
                   : '',
-              style: TextStyle(color: backgroundColor)),
+              style: const TextStyle(color: _textColor)),
         ));
   }
 }
@@ -65,7 +66,6 @@ class FolderListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = Theme.of(context).colorScheme.background;
     final folder = context.watch<MailFolderModel>();
 
     return _selectedBorder(
@@ -76,12 +76,12 @@ class FolderListTile extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .titleMedium!
-                  .apply(color: backgroundColor)),
+                  .apply(color: _textColor)),
           trailing: Text(
               (folder.unseenCount ?? 0) > 0
                   ? folder.unseenCount.toString()
                   : '',
-              style: TextStyle(color: backgroundColor)),
+              style: const TextStyle(color: _textColor)),
         ));
   }
 }

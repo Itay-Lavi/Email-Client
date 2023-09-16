@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../providers/mail/accounts.dart';
+import '../../home/home_screen.dart';
 
 class FormHeader extends StatelessWidget {
-  final bool canPop;
-
-  const FormHeader(this.canPop, {super.key});
+  const FormHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final mailAccountProv = context.watch<MailAccountsProvider>();
+    final canPop =
+        (Navigator.canPop(context) && mailAccountProv.currentAccount != null);
+
+    void goBack() {
+      if (canPop) {
+        Navigator.of(context).pop();
+      } else {
+        Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+      }
+    }
+
     return Stack(
       children: [
         Align(
@@ -18,9 +32,9 @@ class FormHeader extends StatelessWidget {
             alignment: Alignment.center,
           ),
         ),
-        if (canPop)
+        if (mailAccountProv.currentAccount != null)
           IconButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: goBack,
             icon: const Icon(Icons.arrow_back),
           ),
       ],

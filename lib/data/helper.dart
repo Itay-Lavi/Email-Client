@@ -44,6 +44,7 @@ class DatabaseHelper {
           },
           version: 1,
         ));
+
     return _database!;
   }
 
@@ -60,7 +61,7 @@ class DatabaseHelper {
 
     await db.execute(
       '''CREATE TABLE $emailsTableName(id VARCHAR(255) PRIMARY KEY, account_email VARCHAR(255), folder_id INTEGER,
-       from_map TEXT, to_map TEXT, subject TEXT, timestamp VARCHAR(255), flags TEXT, html TEXT)''',
+       from_map TEXT, to_map TEXT, subject TEXT, timestamp VARCHAR(255), flags TEXT, html BLOB)''',
     );
 
     await db.execute('''

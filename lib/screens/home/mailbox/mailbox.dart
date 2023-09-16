@@ -10,15 +10,12 @@ class Mailbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Responsive.isMobile(context);
-    final isAllMobile = Responsive.isAllMobile(context);
-
     return Container(
       decoration: const BoxDecoration(border: Border(right: borderSide)),
-      width: isAllMobile ? double.infinity : 380,
+      width: Responsive.isAllMobile(context) ? double.infinity : 380,
       child: Column(
         children: [
-          if (!isMobile) const MailBoxHeader(),
+          if (!Responsive.isMobile(context)) const MailBoxHeader(),
           const Expanded(child: MailBoxListView()),
         ],
       ),

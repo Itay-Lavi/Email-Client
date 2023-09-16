@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../../../models/mail_folder.dart';
 import '../../../providers/mail/accounts.dart';
-import '../../../providers/mail/mailbox.dart';
+import '../../../providers/mail/mail_folder.dart';
 
 import '../../../providers/ui_provider.dart';
 import './list_tile/inkwell_list_tile.dart';
@@ -22,13 +22,11 @@ class SideMenuContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = Theme.of(context).colorScheme.background;
-
     final mailEditorIsOpen =
         context.select<MailUIProvider, bool>((prov) => prov.mailEditorIsOpen);
 
     final accountProv = context.watch<MailAccountsProvider>();
-    final folders = context.select<MailBoxProvider, List<MailFolderModel>>(
+    final folders = context.select<MailFolderProvider, List<MailFolderModel>>(
         (prov) => prov.folders ?? []);
 
     void onNewMailBtn() {
@@ -45,15 +43,17 @@ class SideMenuContent extends StatelessWidget {
           return (Responsive.isWideMobile(context) &&
                   (mailIsSelected || mailEditorIsOpen))
               ? IconButton(
-                  color: backgroundColor,
-                  icon: const Icon(Icons.arrow_back),
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
                   onPressed: () => mailEditorIsOpen
                       ? context.read<MailUIProvider>().controlMailEditor()
                       : mailListProv.selectCurrentEmail(null))
               : const SizedBox();
         }),
         IconButton(
-            color: backgroundColor,
+            color: Colors.white,
             icon: const Icon(Icons.menu_outlined),
             onPressed: context.read<UIProvider>().controlSideMenu),
         Expanded(child: LayoutBuilder(builder: (context, constraints) {
@@ -103,7 +103,9 @@ class SideMenuContent extends StatelessWidget {
                   ),
                 if (folders.isEmpty &&
                     (Responsive.isDesktop(context) || isDrawer))
-                  CircularProgressIndicator(color: backgroundColor)
+                  const CircularProgressIndicator(
+                    color: Colors.white,
+                  )
               ],
             ),
           );

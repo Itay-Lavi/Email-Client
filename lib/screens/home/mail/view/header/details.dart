@@ -10,8 +10,6 @@ class HeaderMailDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const textStyle = TextStyle(color: Colors.black);
-
     String dateAndTime =
         '${DateFormat.yMd().format(mail.timestamp)}  ${DateFormat.Hm().format(mail.timestamp)}';
 
@@ -39,7 +37,7 @@ class HeaderMailDetails extends StatelessWidget {
                   children: [
                     Text(
                       fromAddress,
-                      style: textStyle.copyWith(fontSize: 18),
+                      style: const TextStyle(fontSize: 18),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -56,7 +54,6 @@ class HeaderMailDetails extends StatelessWidget {
           const SizedBox(height: 5),
           Text(
             'To: ${toAddress.join('; ')}',
-            style: textStyle,
           )
         ],
       ),

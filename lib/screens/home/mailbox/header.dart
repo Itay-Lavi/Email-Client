@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../config/global_var.dart';
 import '../../../providers/mail/list/provider.dart';
-import '../../../providers/mail/mailbox.dart';
+import '../../../providers/mail/mail_folder.dart';
 import '../widgets/search_field.dart';
 
 class MailBoxHeader extends StatelessWidget {
@@ -13,8 +13,8 @@ class MailBoxHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         decoration: BoxDecoration(
-          border: const Border(bottom: borderSide),
           color: Theme.of(context).colorScheme.background,
+          border: const Border(bottom: borderSide),
         ),
         padding: const EdgeInsets.fromLTRB(15, 30, 15, 0),
         child: Column(
@@ -37,14 +37,12 @@ class MailBoxHeader extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Consumer<MailBoxProvider>(
+                Consumer<MailFolderProvider>(
                   builder: (ctx, mailProv, _) {
                     return Text(
                       mailProv.currentFolder?.name ?? 'inbox',
                       style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     );
                   },
                 ),

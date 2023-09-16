@@ -1,5 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'dart:convert';
+import 'dart:typed_data';
+
 class AccountDbModel {
   String email;
   String jwt;
@@ -109,12 +112,14 @@ class MailDbModel {
       to: map['to_map'] as String?,
       subject: map['subject'] as String,
       timestamp: map['timestamp'] as String,
-      html: map['html'] as String,
+      html: utf8.decode(map['html'] ?? []),
       flags: map['flags'] as String?,
     );
   }
 
   Map<String, dynamic> toMap() {
+    Uint8List htmlBytes = Uint8List.fromList(utf8.encode(html!));
+
     return {
       'id': id,
       'account_email': accountEmail,
@@ -124,7 +129,7 @@ class MailDbModel {
       'subject': subject,
       'timestamp': timestamp,
       'flags': flags,
-      'html': html,
+      'html': htmlBytes,
     };
   }
 }

@@ -12,11 +12,9 @@ class ItemTrailing extends StatelessWidget {
   const ItemTrailing({
     super.key,
     required this.isCurrentYear,
-    required this.textStyle,
   });
 
   final bool isCurrentYear;
-  final TextStyle textStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +52,6 @@ class ItemTrailing extends StatelessWidget {
           ),
         Text(
           '${isCurrentYear ? '${DateFormat.E().format(mail.timestamp)},' : ''} ${isCurrentYear ? DateFormat.Md().format(mail.timestamp) : DateFormat.yMd().format(mail.timestamp)}',
-          style: textStyle,
         ),
       ],
     );

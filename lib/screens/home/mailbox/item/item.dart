@@ -1,3 +1,4 @@
+import 'package:email_client/providers/ui_provider.dart';
 import 'package:email_client/screens/home/mailbox/item/trailing.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +15,6 @@ class MailBoxItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final mail = context.watch<MailModel>();
 
-    const textStyle = TextStyle(color: Colors.black);
     String? fromAddress;
     String? fromName;
     try {
@@ -29,10 +29,16 @@ class MailBoxItem extends StatelessWidget {
         .select<MailListProvider, MailModel?>((prov) => prov.selectedMail);
     bool mailIsSelected = curMail == mail;
 
+    bool darkMode = context.select<UIProvider, bool>((prov) => prov.darkMode);
+
     Color? tileColor = mailIsSelected
-        ? const Color.fromARGB(255, 229, 242, 253)
+        ? darkMode
+            ? const Color.fromARGB(255, 94, 94, 94)
+            : const Color.fromARGB(255, 229, 242, 253)
         : mail.isFlagged
-            ? const Color.fromARGB(255, 255, 255, 202)
+            ? darkMode
+                ? const Color.fromARGB(255, 93, 93, 54)
+                : const Color.fromARGB(255, 255, 255, 202)
             : null;
 
     return Container(
@@ -53,20 +59,19 @@ class MailBoxItem extends StatelessWidget {
             fit: BoxFit.scaleDown,
             child: Text(
               fromName!,
-              style: textStyle.copyWith(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
               maxLines: 1,
             ),
           ),
           subtitle: Text(
             mail.subject ?? 'none',
             style: TextStyle(
-                color: mail.isSeen ? Colors.black : Colors.blue,
+                color: mail.isSeen ? null : Colors.blue,
                 fontWeight: mail.isSeen ? FontWeight.normal : FontWeight.bold),
             overflow: TextOverflow.clip,
             maxLines: 1,
           ),
-          trailing:
-              ItemTrailing(isCurrentYear: isCurrentYear, textStyle: textStyle)),
+          trailing: ItemTrailing(isCurrentYear: isCurrentYear)),
     );
   }
 }

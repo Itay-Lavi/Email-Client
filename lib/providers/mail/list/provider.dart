@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:email_client/config/global_var.dart';
 import 'package:email_client/data/databases/mail.dart';
 import 'package:email_client/providers/mail/mail_ui.dart';
+import 'package:email_client/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,13 +13,13 @@ import '../../../services/mail_api.dart';
 import '../../../models/mail.dart';
 import '../../../models/mail_account.dart';
 import '../../../util/utils.dart';
-import '../mailbox.dart';
+import '../mail_folder.dart';
 
 part 'state.dart';
 
 class MailListProvider with ChangeNotifier, MailListProviderState {
   final BuildContext _context;
-  final MailBoxProvider? _mailBoxProvider;
+  final MailFolderProvider? _mailBoxProvider;
   final MailAccountModel? _account;
 
   MailListProvider(this._context, this._mailBoxProvider, this._account) {
@@ -43,7 +44,7 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
       _mails = [...allEmails];
       notifyListeners();
     }
-    debounceOperation(getEmails('0:20'));
+    debounceOperation(getEmails('0:12'));
   }
 
   void selectCurrentEmail(MailModel? current) {
@@ -90,7 +91,7 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
       if (MailModel.areListsEqual(_mails!, fetchedEmails)) return;
 
       final maxFetchNum = int.parse(fetchSlice.split(':')[1]);
-      if (maxFetchNum <= 20) {
+      if (maxFetchNum <= 12) {
         List<String?> fetchedEmailIds =
             fetchedEmails.map((mail) => mail.id).toList();
         _mails!.removeWhere((mail) => !fetchedEmailIds.contains(mail.id));
@@ -106,15 +107,14 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
         }
       }
 
-      if (maxFetchNum <= 20 && currentFolder!.id != null) {
+      if (maxFetchNum <= 12 && currentFolder!.id != null) {
         _mailDb!.setMails(_mails!, _account!.email, currentFolder.id!);
       }
+      notifyListeners();
     } catch (_) {}
-
-    notifyListeners();
   }
 
-  Future<void> sendEmail() async {
+  Future<void> sendEmail(BuildContext ctx) async {
     final emailData = _context.read<MailUIProvider>().mailData;
     emailData.from = _account!.email;
 
@@ -123,7 +123,11 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
 
     try {
       await mailApi.sendMail();
-    } catch (_) {}
+    } catch (_) {
+      // ignore: use_build_context_synchronously
+      showFlushBar(ctx, 'Error',
+          'Unable to send email, please try again later!', Colors.red);
+    }
   }
 
   Future<void> flagEmail(
@@ -190,9 +194,7 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
       _filteredMails = [...fetchedEmails];
 
       notifyListeners();
-    } catch (e) {
-      print(e);
-    }
+    } catch (_) {}
   }
 
   Future<void> deleteEmail([MailModel? mail]) async {

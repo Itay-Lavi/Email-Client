@@ -45,7 +45,8 @@ class MailEditorHeader extends StatelessWidget {
                   title: 'Discard'),
             if (!Responsive.isMobile(context))
               MailHeaderBtnIcon(
-                  onTap: context.read<MailListProvider>().sendEmail,
+                  onTap: () =>
+                      context.read<MailListProvider>().sendEmail(context),
                   icon: Icons.send,
                   title: 'Send')
           ]),

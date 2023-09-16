@@ -78,13 +78,17 @@ class _FormInputsState extends State<FormInputs> {
                 TextFormField(
                   validator: emailValidator,
                   controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
+                  decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: Theme.of(context).textTheme.labelMedium),
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
                   validator: passwordValidator,
                   controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Password'),
+                  decoration: InputDecoration(
+                      labelText: 'Password',
+                      labelStyle: Theme.of(context).textTheme.labelMedium),
                   obscureText: true,
                 ),
                 const SizedBox(height: 20),
