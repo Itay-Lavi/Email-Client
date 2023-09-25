@@ -1,38 +1,38 @@
 import 'package:email_client/data/databases/folder.dart';
+import 'package:email_client/models/mail_account.dart';
 import 'package:email_client/services/folder_api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../data/helper.dart';
 import '../../models/mail_folder.dart';
-import 'accounts.dart';
 import 'mail_ui.dart';
 
 class MailFolderProvider with ChangeNotifier {
   final BuildContext _context;
   FolderDatabase? _folderDb;
-  final MailAccountsProvider? _accountProvider;
   List<MailFolderModel>? _folders;
   List<MailFolderModel>? get folders =>
       _folders != null ? [..._folders!] : null;
 
+  MailAccountModel? currentAccount;
   MailFolderModel? currentFolder;
 
-  MailFolderProvider(this._context, this._accountProvider) {
+  MailFolderProvider(this._context, this.currentAccount) {
     void init() async {
       final db = await DatabaseHelper().database;
       _folderDb = FolderDatabase(db);
       initializeFolders();
     }
 
-    if (_accountProvider != null && _accountProvider?.currentAccount != null) {
+    if (currentAccount != null) {
       init();
     }
   }
 
   Future<void> initializeFolders() async {
-    final allFolders = await _folderDb!
-        .getFoldersByAccount(_accountProvider!.currentAccount!.email);
+    final allFolders =
+        await _folderDb!.getFoldersByAccount(currentAccount!.email);
     if (allFolders.isNotEmpty) {
       _folders = [...allFolders];
       setCurrentFolder(getInboxFolder());
@@ -62,8 +62,7 @@ class MailFolderProvider with ChangeNotifier {
   }
 
   Future<void> getFolders() async {
-    final folderApi =
-        FolderApiService(account: _accountProvider!.currentAccount!);
+    final folderApi = FolderApiService(account: currentAccount!);
     try {
       final response = await folderApi.getFolders();
 
@@ -77,8 +76,7 @@ class MailFolderProvider with ChangeNotifier {
       _folders = [...fetchedFolders];
 
       if (_folders!.isNotEmpty) {
-        _folderDb!
-            .setMailFolders(_folders!, _accountProvider!.currentAccount!.email);
+        _folderDb!.setMailFolders(_folders!, currentAccount!.email);
       }
 
       final folderHasSet = setCurrentFolder(getInboxFolder());

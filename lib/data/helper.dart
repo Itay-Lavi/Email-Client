@@ -42,6 +42,9 @@ class DatabaseHelper {
           onCreate: (db, version) async {
             await _createTables(db);
           },
+          onOpen: (db) async {
+            await db.execute('PRAGMA foreign_keys = ON;');
+          },
           version: 1,
         ));
 
@@ -50,18 +53,23 @@ class DatabaseHelper {
 
   Future<void> _createTables(Database db) async {
     await db.execute(
-      'CREATE TABLE $accountTableName(email VARCHAR(255) PRIMARY KEY, jwt TEXT, host VARCHAR(100), unseen_count INTEGER)',
+      'CREATE TABLE $accountTableName(email VARCHAR(320) PRIMARY KEY, jwt TEXT, host VARCHAR(100), unseen_count INTEGER)',
     );
 
     await db.execute(
-      '''CREATE TABLE $folderTableName(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255),
-       account_email VARCHAR(255), favorite INTEGER, unseen_count INTEGER,
-        special_use_attrib VARCHAR(255), parent_id INTEGER)''',
+      '''CREATE TABLE $folderTableName(id INTEGER PRIMARY KEY AUTOINCREMENT,
+       name VARCHAR(255), account_email VARCHAR(320),
+       favorite INTEGER, unseen_count INTEGER,
+        special_use_attrib VARCHAR(255), parent_id INTEGER,
+        FOREIGN KEY (account_email) REFERENCES $accountTableName(email) ON DELETE CASCADE)''',
     );
 
     await db.execute(
-      '''CREATE TABLE $emailsTableName(id VARCHAR(255) PRIMARY KEY, account_email VARCHAR(255), folder_id INTEGER,
-       from_map TEXT, to_map TEXT, subject TEXT, timestamp VARCHAR(255), flags TEXT, html BLOB)''',
+      '''CREATE TABLE $emailsTableName(id VARCHAR(255) PRIMARY KEY,
+      account_email VARCHAR(320),
+       folder_id INTEGER, from_map TEXT, to_map TEXT, subject TEXT,
+        timestamp VARCHAR(255), flags TEXT, html BLOB,
+         FOREIGN KEY (account_email) REFERENCES $accountTableName(email) ON DELETE CASCADE)''',
     );
 
     await db.execute('''

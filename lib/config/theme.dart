@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 
+const borderSide =
+    BorderSide(color: Color.fromARGB(255, 213, 213, 213), width: 1.3);
+
 ThemeData lightTheme(BuildContext context) {
   return ThemeData(
     textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
@@ -13,6 +16,10 @@ ThemeData lightTheme(BuildContext context) {
     appBarTheme: const AppBarTheme(
         foregroundColor: Colors.white,
         backgroundColor: Color.fromARGB(255, 62, 132, 207)),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: const Color.fromARGB(255, 62, 132, 207))),
     useMaterial3: true,
   );
 }

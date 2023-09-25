@@ -8,13 +8,14 @@ import '../../../models/mail_account.dart';
 import '../../../providers/mail/accounts.dart';
 
 import '../../home/home_screen.dart';
-import './header.dart';
+import '../header.dart';
 import './inputs.dart';
 
 const defaultHost = 'gmail';
 
 class AuthForm extends StatelessWidget {
-  const AuthForm({Key? key}) : super(key: key);
+  final void Function(bool) controlShowingAccounts;
+  const AuthForm(this.controlShowingAccounts, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,38 +37,32 @@ class AuthForm extends StatelessWidget {
           showFlushBar(context, 'Error', 'An error occurred please try later',
               Colors.red);
         }
-
         return;
       }
 
-      await Future.delayed(const Duration(milliseconds: 300), () {
-        if (canPop) {
-          Navigator.of(context).pop();
-        } else {
-          Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
-        }
-      });
+      if (canPop) {
+        Navigator.of(context).pop();
+      } else {
+        Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+      }
     }
 
-    return SizedBox(
-      width: 400,
-      child: Card(
-        color: Theme.of(context).colorScheme.background,
-        surfaceTintColor: const Color.fromARGB(255, 220, 239, 255),
-        elevation: 12,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const FormHeader(),
-              FormInputs(
-                addMailAccount: addAccount,
-              ),
-            ],
-          ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const AuthHeader(true),
+        FormInputs(
+          addMailAccount: addAccount,
         ),
-      ),
+        if (mailAccountProv.mailAccounts.isNotEmpty) ...[
+          const SizedBox(height: 15),
+          TextButton.icon(
+            label: const Text('Manage Accounts'),
+            icon: const Icon(Icons.manage_accounts),
+            onPressed: () => controlShowingAccounts(true),
+          )
+        ]
+      ],
     );
   }
 }

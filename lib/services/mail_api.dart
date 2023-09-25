@@ -6,7 +6,7 @@ import 'package:email_client/models/mail_account.dart';
 import 'package:email_client/models/send_mail.dart';
 import 'package:email_client/util/http.dart';
 
-import '../config/global_var.dart';
+import '../config/config.dart';
 
 class MailApiService {
   final MailAccountModel account;

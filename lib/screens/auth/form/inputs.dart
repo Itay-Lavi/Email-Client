@@ -99,9 +99,10 @@ class _FormInputsState extends State<FormInputs> {
                 if (!_isLoading)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: ElevatedButton(
+                    child: ElevatedButton.icon(
                       onPressed: addAccount,
-                      child: const Text('Add Account'),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Add Account'),
                     ),
                   ),
               ],

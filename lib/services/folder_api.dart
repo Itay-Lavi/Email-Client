@@ -1,7 +1,6 @@
-import 'package:email_client/models/mail_folder.dart';
-
-import '../config/global_var.dart';
+import '../config/config.dart';
 import '../models/mail_account.dart';
+import '../models/mail_folder.dart';
 import '../util/http.dart';
 
 class FolderApiService {

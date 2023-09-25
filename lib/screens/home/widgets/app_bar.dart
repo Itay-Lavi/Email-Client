@@ -54,7 +54,6 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
   void setupSystemUIOverlay(BuildContext context, Color primaryColor) {
     final mySystemTheme = SystemUiOverlayStyle.light.copyWith(
-      systemNavigationBarColor: const Color.fromARGB(255, 8, 53, 91),
       statusBarBrightness: Brightness.dark,
       statusBarColor: primaryColor,
     );

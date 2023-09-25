@@ -1,3 +1,4 @@
+import 'package:email_client/providers/settings_provider.dart';
 import 'package:email_client/providers/ui_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +36,7 @@ class SettingsList extends StatelessWidget {
           title: const Text(
             'Dark Mode',
           ),
-          trailing: Consumer<UIProvider>(
+          trailing: Consumer<SettingsProvider>(
             builder: (context, prov, __) => Switch(
               value: prov.darkMode,
               onChanged: prov.controlTheme,

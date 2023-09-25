@@ -1,6 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
-import 'package:email_client/config/global_var.dart';
+import 'package:email_client/config/config.dart';
 import 'package:email_client/data/databases/mail.dart';
 import 'package:email_client/providers/mail/mail_ui.dart';
 import 'package:email_client/widgets/flushbar.dart';
@@ -17,9 +19,12 @@ import '../mail_folder.dart';
 
 part 'state.dart';
 
+const defaultMaxFetch = 15;
+
 class MailListProvider with ChangeNotifier, MailListProviderState {
   final BuildContext _context;
   final MailFolderProvider? _mailBoxProvider;
+  MailFolderModel? currentFolder;
   final MailAccountModel? _account;
 
   MailListProvider(this._context, this._mailBoxProvider, this._account) {
@@ -32,6 +37,7 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
     if (_account != null &&
         _mailBoxProvider != null &&
         _mailBoxProvider?.currentFolder != null) {
+      currentFolder = _mailBoxProvider!.currentFolder!;
       init();
     }
   }
@@ -44,7 +50,7 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
       _mails = [...allEmails];
       notifyListeners();
     }
-    debounceOperation(getEmails('0:12'));
+    debounceOperation(getEmails('0:$defaultMaxFetch'));
   }
 
   void selectCurrentEmail(MailModel? current) {
@@ -90,8 +96,8 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
       if (fetchedEmails.isEmpty) return notifyListeners();
       if (MailModel.areListsEqual(_mails!, fetchedEmails)) return;
 
-      final maxFetchNum = int.parse(fetchSlice.split(':')[1]);
-      if (maxFetchNum <= 12) {
+      final maxFetchIndex = int.parse(fetchSlice.split(':')[1]);
+      if (maxFetchIndex <= defaultMaxFetch) {
         List<String?> fetchedEmailIds =
             fetchedEmails.map((mail) => mail.id).toList();
         _mails!.removeWhere((mail) => !fetchedEmailIds.contains(mail.id));
@@ -107,7 +113,7 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
         }
       }
 
-      if (maxFetchNum <= 12 && currentFolder!.id != null) {
+      if (maxFetchIndex <= defaultMaxFetch && currentFolder!.id != null) {
         _mailDb!.setMails(_mails!, _account!.email, currentFolder.id!);
       }
       notifyListeners();
@@ -119,14 +125,17 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
     emailData.from = _account!.email;
 
     final mailApi = MailApiService(account: _account!, emailData: emailData);
-    _context.read<MailUIProvider>().controlMailEditor(false);
 
     try {
       await mailApi.sendMail();
-    } catch (_) {
-      // ignore: use_build_context_synchronously
-      showFlushBar(ctx, 'Error',
-          'Unable to send email, please try again later!', Colors.red);
+      _context.read<MailUIProvider>().controlMailEditor(false);
+    } catch (error) {
+      if (error is ArgumentError) {
+        showFlushBar(ctx, 'Error',
+            'Unable to send email, ${error.message['response']}', Colors.red);
+      } else {
+        showFlushBar(ctx, 'Error', 'Unable to send email, $error', Colors.red);
+      }
     }
   }
 
@@ -136,6 +145,9 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
     mail.updateFlags(flags, addFlags);
     try {
       await mailApi.flagMail(mail.id!, flags, addFlags);
+      final mailDbModel =
+          MailDatabase.toMailDbModel(mail, _account!.email, currentFolder!.id!);
+      _mailDb!.updateMail(mailDbModel);
     } catch (e) {
       mail.updateFlags(flags, !addFlags);
     }
@@ -199,7 +211,8 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
 
   Future<void> deleteEmail([MailModel? mail]) async {
     if (selectedMail == null && mail == null) return;
-    moveEmail(mail ?? selectedMail!, specialUseAttribTypes[0]);
     selectCurrentEmail(null);
+    moveEmail(mail ?? selectedMail!, specialUseAttribTypes[0]);
+    _mailDb!.deleteMail(mail!.id!);
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../config/global_var.dart';
+import '../../../config/theme.dart';
 import '../../../providers/mail/list/provider.dart';
 import '../../../providers/mail/mail_folder.dart';
 import '../widgets/search_field.dart';

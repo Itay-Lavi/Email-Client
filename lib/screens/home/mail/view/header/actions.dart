@@ -1,12 +1,12 @@
-import 'package:email_client/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../config/global_var.dart';
+import '../../../../../config/config.dart';
 import '../../../../../providers/mail/list/provider.dart';
 import '../../../../../providers/mail/mail_ui.dart';
 import '../../../../../models/mail.dart';
 import '../../../../../models/send_mail.dart';
+import '../../../../../responsive.dart';
 import '../../../../../util/mail_logic.dart';
 import '../../../../../widgets/btn_icon.dart';
 

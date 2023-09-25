@@ -1,15 +1,17 @@
 import 'package:email_client/providers/providers.dart';
+import 'package:email_client/providers/settings_provider.dart';
 import 'package:email_client/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 import 'config/theme.dart';
 import './screens/auth/auth_screen.dart';
 import './screens/home/home_screen.dart';
-import 'providers/ui_provider.dart';
 
-void main() {
+void main() async {
   //setUrlStrategy(PathUrlStrategy());
+  await dotenv.load(fileName: "api.env");
   runApp(const MyApp());
 }
 
@@ -29,7 +31,8 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool darkMode = context.select<UIProvider, bool>((prov) => prov.darkMode);
+    bool darkMode =
+        context.select<SettingsProvider, bool>((prov) => prov.darkMode);
 
     return MaterialApp(
         debugShowCheckedModeBanner: false,

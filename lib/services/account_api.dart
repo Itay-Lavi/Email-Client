@@ -1,7 +1,6 @@
-import 'package:email_client/models/mail_account.dart';
-import 'package:email_client/util/http.dart';
-
-import '../config/global_var.dart';
+import '../config/config.dart';
+import '../models/mail_account.dart';
+import '../util/http.dart';
 
 class AccountApiService {
   final MailAccountModel account;
@@ -18,7 +17,7 @@ class AccountApiService {
     return response;
   }
 
-  Future<dynamic> signin() async {
+  Future<dynamic> signIn() async {
     headers = {
       'email': account.email,
       'password': account.password!,

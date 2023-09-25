@@ -1,13 +1,31 @@
+import 'package:email_client/providers/mail/accounts.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'manager/accounts.dart';
 import 'form/form.dart';
 
-class AuthScreen extends StatelessWidget {
+class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
   static const routeName = '/auth';
 
   @override
+  State<AuthScreen> createState() => _AuthScreenState();
+}
+
+class _AuthScreenState extends State<AuthScreen> {
+  bool showAccounts = true;
+
+  void controlShowingAccounts(bool value) {
+    setState(() {
+      showAccounts = value;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final backgroundColor = Theme.of(context).colorScheme.background;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -17,11 +35,32 @@ class AuthScreen extends StatelessWidget {
             decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [
               const Color.fromARGB(255, 212, 234, 252),
-              Theme.of(context).colorScheme.background,
+              backgroundColor,
               const Color.fromARGB(255, 255, 238, 213)
             ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
           ),
-          const Align(alignment: Alignment.center, child: AuthForm())
+          Align(
+              alignment: Alignment.center,
+              child: SingleChildScrollView(
+                child: SizedBox(
+                    width: 400,
+                    child: Card(
+                        color: backgroundColor,
+                        surfaceTintColor: backgroundColor,
+                        elevation: 12,
+                        child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Consumer<MailAccountsProvider>(
+                              builder: (context, accountProvider, _) {
+                                final anyAccountsExists =
+                                    accountProvider.mailAccounts.isNotEmpty;
+
+                                return anyAccountsExists && showAccounts
+                                    ? AccountsManager(controlShowingAccounts)
+                                    : AuthForm(controlShowingAccounts);
+                              },
+                            )))),
+              ))
         ],
       ),
     );

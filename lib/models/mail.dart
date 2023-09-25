@@ -1,10 +1,13 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
-import '../config/global_var.dart';
+import '../config/config.dart';
 
-class MailModel with ChangeNotifier {
+// ignore: must_be_immutable
+class MailModel extends Equatable with ChangeNotifier {
   String? id;
   Map<String, dynamic>? from;
   Map<String, dynamic>? to;
@@ -76,4 +79,18 @@ class MailModel with ChangeNotifier {
   }
 
   String toJson() => json.encode(toMap());
+
+  @override
+  List<dynamic> get props {
+    return [
+      id,
+      from,
+      to,
+      subject,
+      timestamp,
+      flags,
+      attachments,
+      html,
+    ];
+  }
 }

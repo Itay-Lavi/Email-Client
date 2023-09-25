@@ -1,5 +1,7 @@
+import 'package:email_client/providers/mail/list/provider.dart';
 import 'package:email_client/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../responsive.dart';
 
@@ -10,11 +12,13 @@ class ButtomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void navigateToSettings() {
+    void navigateToSettings() async {
       if (Responsive.isAllMobile(context)) {
         Navigator.of(context).pushNamed(SettingsScreen.routeName);
       } else {
-        showDialog(
+        final selectedEmail = context.read<MailListProvider>().selectedMail;
+        context.read<MailListProvider>().selectCurrentEmail(null);
+        await showDialog(
             context: context,
             builder: (context) => const AlertDialog(
                   title: Text('Settings'),
@@ -22,6 +26,8 @@ class ButtomNavBar extends StatelessWidget {
                     child: SettingsList(),
                   ),
                 ));
+        // ignore: use_build_context_synchronously
+        context.read<MailListProvider>().selectCurrentEmail(selectedEmail);
       }
     }
 

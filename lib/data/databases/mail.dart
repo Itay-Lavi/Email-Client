@@ -11,21 +11,26 @@ class MailDatabase {
 
   MailDatabase(this._db);
 
+  static MailDbModel toMailDbModel(
+      MailModel mail, String accountEmail, int folderId) {
+    return MailDbModel(
+        id: mail.id!,
+        accountEmail: accountEmail,
+        folderId: folderId,
+        from: jsonEncode(mail.from),
+        to: jsonEncode(mail.to),
+        subject: mail.subject,
+        html: mail.html,
+        flags: jsonEncode(mail.flags),
+        timestamp: mail.timestamp.toIso8601String());
+  }
+
   Future<void> setMails(
       List<MailModel> mails, String accountEmail, int folderId) async {
-    await deleteMailByFolder(folderId);
+    await deleteMailsByFolder(folderId);
 
     for (final mail in mails) {
-      await insertMail(MailDbModel(
-          id: mail.id!,
-          accountEmail: accountEmail,
-          folderId: folderId,
-          from: jsonEncode(mail.from),
-          to: jsonEncode(mail.to),
-          subject: mail.subject,
-          html: mail.html,
-          flags: jsonEncode(mail.flags),
-          timestamp: mail.timestamp.toIso8601String()));
+      await insertMail(toMailDbModel(mail, accountEmail, folderId));
     }
   }
 
@@ -33,7 +38,7 @@ class MailDatabase {
     await _db.insert(
       emailsTableName,
       mail.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      conflictAlgorithm: ConflictAlgorithm.ignore,
     );
 
     await _db.insert(emailsFoldersTableName,
@@ -50,9 +55,7 @@ class MailDatabase {
     );
   }
 
-  Future<void> moveMailFolder(MailDbModel mail) async {}
-
-  Future<void> deleteMail(int id) async {
+  Future<void> deleteMail(String id) async {
     await _db.delete(
       emailsTableName,
       where: 'id = ?',
@@ -60,14 +63,9 @@ class MailDatabase {
     );
   }
 
-  Future<void> deleteMailByFolder(int folderId) async {
+  Future<void> deleteMailsByFolder(int folderId) async {
     await _db.delete(
       emailsTableName,
-      where: 'folder_id = ?',
-      whereArgs: [folderId],
-    );
-    await _db.delete(
-      emailsFoldersTableName,
       where: 'folder_id = ?',
       whereArgs: [folderId],
     );

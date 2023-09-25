@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../config/global_var.dart';
+import '../../../config/theme.dart';
 import '../../../responsive.dart';
 import 'header.dart';
 import './listview.dart';

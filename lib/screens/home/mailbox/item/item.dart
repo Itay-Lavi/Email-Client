@@ -1,12 +1,12 @@
-import 'package:email_client/providers/ui_provider.dart';
-import 'package:email_client/screens/home/mailbox/item/trailing.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../config/global_var.dart';
+import '../../../../config/theme.dart';
 import '../../../../models/mail.dart';
 import '../../../../providers/mail/list/provider.dart';
+import '../../../../providers/settings_provider.dart';
 import '../../../../util/mail_logic.dart';
+import 'trailing.dart';
 
 class MailBoxItem extends StatelessWidget {
   const MailBoxItem({super.key});
@@ -29,7 +29,8 @@ class MailBoxItem extends StatelessWidget {
         .select<MailListProvider, MailModel?>((prov) => prov.selectedMail);
     bool mailIsSelected = curMail == mail;
 
-    bool darkMode = context.select<UIProvider, bool>((prov) => prov.darkMode);
+    bool darkMode =
+        context.select<SettingsProvider, bool>((prov) => prov.darkMode);
 
     Color? tileColor = mailIsSelected
         ? darkMode

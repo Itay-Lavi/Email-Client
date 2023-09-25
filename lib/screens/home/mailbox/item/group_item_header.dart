@@ -1,9 +1,9 @@
+import 'package:email_client/providers/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../config/global_var.dart';
-import '../../../../providers/ui_provider.dart';
+import '../../../../config/theme.dart';
 
 class GroupItemHeader extends StatelessWidget {
   final DateTime date;
@@ -11,7 +11,8 @@ class GroupItemHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool darkMode = context.select<UIProvider, bool>((prov) => prov.darkMode);
+    bool darkMode =
+        context.select<SettingsProvider, bool>((prov) => prov.darkMode);
     return Container(
       decoration: BoxDecoration(
         color: darkMode

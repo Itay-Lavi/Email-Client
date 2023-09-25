@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class BottomListviewModal extends StatelessWidget {
-  const BottomListviewModal({
+  const BottomListviewModal(
+    this.newEmailsIsLoading, {
     super.key,
-    required this.newEmailsIsLoading,
   });
 
   final bool newEmailsIsLoading;

@@ -11,9 +11,6 @@ class UIProvider with ChangeNotifier {
   bool _sideMenuIsOpen = true;
   bool get sideMenuIsOpen => _sideMenuIsOpen;
 
-  bool _darkMode = false;
-  bool get darkMode => _darkMode;
-
   final GlobalKey<ScaffoldState> _homeScaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<ScaffoldState> get homeScaffoldKey => _homeScaffoldKey;
 
@@ -37,10 +34,5 @@ class UIProvider with ChangeNotifier {
     } else if (_homeScaffoldKey.currentState!.isDrawerOpen) {
       _homeScaffoldKey.currentState!.closeDrawer();
     }
-  }
-
-  void controlTheme(bool value) {
-    _darkMode = value;
-    notifyListeners();
   }
 }

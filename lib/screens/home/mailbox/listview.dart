@@ -60,13 +60,14 @@ class _MailBoxListViewState extends State<MailBoxListView> {
     final mails = mailListProv.mails;
     if (mails != null) {
       await debounceOperation(
-          mailListProv.getEmails('${mails.length}:${mails.length + 30}'));
+          mailListProv.getEmails('${mails.length}:${mails.length + 20}'));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final mailListProv = context.watch<MailListProvider>();
+
     showFilteredMails =
         context.select<MailUIProvider, bool>((prov) => prov.showFilteredMails);
     mails = showFilteredMails ? mailListProv.filteredMails : mailListProv.mails;
@@ -114,7 +115,7 @@ class _MailBoxListViewState extends State<MailBoxListView> {
             },
           ),
         ),
-        BottomListviewModal(newEmailsIsLoading: newEmailsIsLoading)
+        BottomListviewModal(newEmailsIsLoading)
       ],
     );
   }

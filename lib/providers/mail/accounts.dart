@@ -54,7 +54,7 @@ class MailAccountsProvider with ChangeNotifier {
         _mailAccounts.indexWhere((acc) => acc.email == account.email) > -1;
     if (accountIsExist) throw 'Account Already Exist';
 
-    final token = await AccountApiService(account: account).signin();
+    final token = await AccountApiService(account: account).signIn();
     final newAccount =
         MailAccountModel(host: account.host, email: account.email, jwt: token);
 
@@ -72,6 +72,12 @@ class MailAccountsProvider with ChangeNotifier {
     } catch (_) {}
 
     _mailAccounts.remove(account);
+    if (_mailAccounts.isEmpty) {
+      currentAccount = null;
+    } else {
+      currentAccount = _mailAccounts[0];
+    }
+
     notifyListeners();
   }
 

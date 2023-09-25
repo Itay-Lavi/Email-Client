@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-const hostname = '192.168.1.10:8000';
-
-const borderSide =
-    BorderSide(color: Color.fromARGB(255, 213, 213, 213), width: 1.3);
+final hostname = dotenv.env['HOSTNAME']!;
 
 List<String> specialUseAttribTypes = [
   r'\Trash',
