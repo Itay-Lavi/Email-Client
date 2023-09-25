@@ -1,7 +1,7 @@
-import 'package:email_client/providers/settings_provider.dart';
-import 'package:email_client/providers/ui_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../providers/settings_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

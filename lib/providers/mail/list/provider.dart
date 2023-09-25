@@ -211,8 +211,9 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
 
   Future<void> deleteEmail([MailModel? mail]) async {
     if (selectedMail == null && mail == null) return;
+    final curMail = mail ?? selectedMail!;
+    moveEmail(curMail, specialUseAttribTypes[0]);
     selectCurrentEmail(null);
-    moveEmail(mail ?? selectedMail!, specialUseAttribTypes[0]);
-    _mailDb!.deleteMail(mail!.id!);
+    _mailDb!.deleteMail(curMail.id!);
   }
 }
