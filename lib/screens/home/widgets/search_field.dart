@@ -1,8 +1,8 @@
+import 'package:email_client/providers/mail/list/filtered.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../providers/mail/list/provider.dart';
-import '../../../providers/mail/mail_ui.dart';
+import '../../../widgets/flushbar.dart';
 
 class SearchField extends StatelessWidget {
   final bool inAppBar;
@@ -20,13 +20,20 @@ class SearchField extends StatelessWidget {
     void searchEmailsByText() {
       final text = searchFieldController.text.trim();
       if (text.isEmpty) return;
-      context.read<MailListProvider>().getEmailsByText(text);
+
+      context
+          .read<FilteredMailListProvider>()
+          .getFilteredEmails(text)
+          .onError((error, stackTrace) {
+        showFlushBar(
+            context, 'Error', 'An error occurred please try later', Colors.red);
+      });
     }
 
     final color = inAppBar ? Theme.of(context).colorScheme.background : null;
 
-    final showFilteredMails =
-        context.select<MailUIProvider, bool>((prov) => prov.showFilteredMails);
+    final showFilteredMails = context.select<FilteredMailListProvider, bool>(
+        (prov) => prov.showFilteredMails);
 
     return TextField(
       focusNode: focusNode,
@@ -34,9 +41,7 @@ class SearchField extends StatelessWidget {
       style: TextStyle(fontSize: 16, color: color),
       controller: searchFieldController,
       textInputAction: TextInputAction.search,
-      onSubmitted: (_) {
-        searchEmailsByText();
-      },
+      onSubmitted: (_) => searchEmailsByText(),
       decoration: InputDecoration(
         hintStyle: TextStyle(color: color),
         suffixIconColor: color,
@@ -56,7 +61,7 @@ class SearchField extends StatelessWidget {
                   onPressed: () {
                     searchFieldController.text = '';
                     context
-                        .read<MailUIProvider>()
+                        .read<FilteredMailListProvider>()
                         .controlShowFilteredMails(false);
                   }),
           ],

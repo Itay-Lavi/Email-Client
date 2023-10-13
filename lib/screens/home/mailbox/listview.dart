@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import '../../../models/mail.dart';
 import '../../../providers/mail/list/provider.dart';
-import '../../../providers/mail/mail_ui.dart';
 import '../../../screens/home/mailbox/item/group_item_header.dart';
 import '../../../screens/home/mailbox/item/item.dart';
 
@@ -14,15 +13,18 @@ import '../../../util/mail_logic.dart';
 import './bottom_modal.dart';
 
 class MailBoxListView extends StatefulWidget {
-  const MailBoxListView({super.key});
+  final List<MailModel> mails;
+  const MailBoxListView(this.mails, {super.key});
 
   @override
   State<MailBoxListView> createState() => _MailBoxListViewState();
 }
 
+double _scrollPosition = 0.0;
+
 class _MailBoxListViewState extends State<MailBoxListView> {
-  final ScrollController scrollController = ScrollController();
-  List<MailModel>? mails = [];
+  ScrollController scrollController =
+      ScrollController(initialScrollOffset: _scrollPosition);
   bool showFilteredMails = false;
   bool newEmailsIsLoading = false;
 
@@ -39,6 +41,7 @@ class _MailBoxListViewState extends State<MailBoxListView> {
   }
 
   void scrollListener() async {
+    _scrollPosition = scrollController.position.pixels;
     if (scrollController.position.pixels ==
             scrollController.position.maxScrollExtent &&
         !newEmailsIsLoading) {
@@ -66,37 +69,15 @@ class _MailBoxListViewState extends State<MailBoxListView> {
 
   @override
   Widget build(BuildContext context) {
-    final mailListProv = context.watch<MailListProvider>();
-
-    showFilteredMails =
-        context.select<MailUIProvider, bool>((prov) => prov.showFilteredMails);
-    mails = showFilteredMails ? mailListProv.filteredMails : mailListProv.mails;
-
     Map<String, List<MailModel>> groupedEmails =
-        groupAndSortEmails(mails ?? []);
-
-    if (mails == null) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    if (groupedEmails.isEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            'assets/images/no-data.png',
-            scale: 4,
-          ),
-          const Text('No Emails Found!')
-        ],
-      );
-    }
+        groupAndSortEmails(widget.mails);
 
     return Column(
       children: [
         Expanded(
+            child: RefreshIndicator(
+          onRefresh: () =>
+              context.read<MailListProvider>().getEmails('0:$defaultMaxFetch'),
           child: GroupListView(
             controller: scrollController,
             sectionsCount: groupedEmails.keys.toList().length,
@@ -114,7 +95,7 @@ class _MailBoxListViewState extends State<MailBoxListView> {
               return GroupItemHeader(date);
             },
           ),
-        ),
+        )),
         BottomListviewModal(newEmailsIsLoading)
       ],
     );

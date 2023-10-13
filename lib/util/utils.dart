@@ -11,7 +11,3 @@ Future<void> debounceOperation(Future<void> callBackFunc) async {
   );
   await _operation!.value;
 }
-
-void dispose() {
-  _operation?.cancel();
-}

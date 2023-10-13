@@ -4,7 +4,7 @@ import 'dart:isolate';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:archive/archive.dart';
 
-dynamic deCompressData(data) async {
+Future<String> deCompressData(data) async {
   String deCompressFunc() {
     List<int> gzipBytes = base64.decode(data.toString());
     List<int> decompressed = GZipDecoder().decodeBytes(gzipBytes);
@@ -21,7 +21,7 @@ dynamic deCompressData(data) async {
   return decodedData;
 }
 
-dynamic compressData(dynamic data) async {
+Future<String> compressData(dynamic data) async {
   String compressFunc() {
     List<int> utf = utf8.encode(data);
     List<int> compressed = GZipEncoder().encode(utf)!;

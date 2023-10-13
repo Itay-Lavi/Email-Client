@@ -2,14 +2,11 @@ import 'package:email_client/data/databases/folder.dart';
 import 'package:email_client/models/mail_account.dart';
 import 'package:email_client/services/folder_api.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../data/helper.dart';
 import '../../models/mail_folder.dart';
-import 'mail_ui.dart';
 
 class MailFolderProvider with ChangeNotifier {
-  final BuildContext _context;
   FolderDatabase? _folderDb;
   List<MailFolderModel>? _folders;
   List<MailFolderModel>? get folders =>
@@ -18,7 +15,7 @@ class MailFolderProvider with ChangeNotifier {
   MailAccountModel? currentAccount;
   MailFolderModel? currentFolder;
 
-  MailFolderProvider(this._context, this.currentAccount) {
+  MailFolderProvider(this.currentAccount) {
     void init() async {
       final db = await DatabaseHelper().database;
       _folderDb = FolderDatabase(db);
@@ -56,7 +53,6 @@ class MailFolderProvider with ChangeNotifier {
       return false;
     }
     currentFolder = folder;
-    _context.read<MailUIProvider>().controlShowFilteredMails(false);
     notifyListeners();
     return true;
   }

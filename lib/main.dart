@@ -1,6 +1,3 @@
-import 'package:email_client/providers/providers.dart';
-import 'package:email_client/providers/settings_provider.dart';
-import 'package:email_client/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +5,9 @@ import 'package:provider/provider.dart';
 import 'config/theme.dart';
 import './screens/auth/auth_screen.dart';
 import './screens/home/home_screen.dart';
+import 'providers/providers.dart';
+import 'providers/settings_provider.dart';
+import 'screens/settings_screen.dart';
 
 void main() async {
   //setUrlStrategy(PathUrlStrategy());

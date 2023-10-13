@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:email_client/config/config.dart';
 import 'package:email_client/data/databases/mail.dart';
 import 'package:email_client/providers/mail/mail_ui.dart';
-import 'package:email_client/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -43,8 +42,8 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
   }
 
   Future<void> initializeEmails() async {
-    final allEmails = await _mailDb!.getMailsByAccountAndFolder(
-        _account!.email, _mailBoxProvider!.currentFolder!.id);
+    final allEmails = await _mailDb!
+        .getMailsByAccountAndFolder(_account!.email, currentFolder!.id);
 
     if (allEmails.isNotEmpty) {
       _mails = [...allEmails];
@@ -76,7 +75,6 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
     Map<String, dynamic> body;
     List<MailModel> fetchedEmails;
 
-    final currentFolder = _mailBoxProvider?.currentFolder;
     final callableFolderName =
         currentFolder?.callname ?? currentFolder?.name ?? 'inbox';
 
@@ -114,28 +112,15 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
       }
 
       if (maxFetchIndex <= defaultMaxFetch && currentFolder!.id != null) {
-        _mailDb!.setMails(_mails!, _account!.email, currentFolder.id!);
+        _mailDb!.setMails(_mails!, _account!.email, currentFolder!.id!);
       }
       notifyListeners();
-    } catch (_) {}
-  }
-
-  Future<void> sendEmail(BuildContext ctx) async {
-    final emailData = _context.read<MailUIProvider>().mailData;
-    emailData.from = _account!.email;
-
-    final mailApi = MailApiService(account: _account!, emailData: emailData);
-
-    try {
-      await mailApi.sendMail();
-      _context.read<MailUIProvider>().controlMailEditor(false);
-    } catch (error) {
-      if (error is ArgumentError) {
-        showFlushBar(ctx, 'Error',
-            'Unable to send email, ${error.message['response']}', Colors.red);
-      } else {
-        showFlushBar(ctx, 'Error', 'Unable to send email, $error', Colors.red);
+    } catch (e) {
+      if (_mails == null) {
+        _mails == [];
+        notifyListeners();
       }
+      rethrow;
     }
   }
 
@@ -173,39 +158,6 @@ class MailListProvider with ChangeNotifier, MailListProviderState {
         MailApiService(account: _account!, folderName: folderCallname);
     try {
       await mailApi.moveMailFolder(mail.id!, folderCallname);
-    } catch (_) {}
-  }
-
-  Future<void> getEmailsByText(String text) async {
-    _context.read<MailUIProvider>().controlShowFilteredMails(true);
-    _filteredMails = null;
-    notifyListeners();
-
-    MailFolderModel? folderAll =
-        MailFolderModel.findFolderBySpecialUseAttribInList(
-            _mailBoxProvider!.folders!, 'All');
-
-    if (folderAll?.callname == null &&
-        _mailBoxProvider?.currentFolder?.callname == null) {
-      throw 'please try again later!';
-    } else {
-      folderAll ??= _mailBoxProvider?.currentFolder;
-    }
-
-    final mailApi = MailApiService(
-      account: _account!,
-      folderName: folderAll!.callname,
-    );
-
-    try {
-      final body = await mailApi.getMailsByText(text);
-      final response = body['response'] as List<dynamic>;
-      final fetchedEmails =
-          response.map((email) => MailModel.fromMap(email)).toList();
-
-      _filteredMails = [...fetchedEmails];
-
-      notifyListeners();
     } catch (_) {}
   }
 

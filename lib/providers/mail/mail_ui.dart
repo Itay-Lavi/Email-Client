@@ -9,9 +9,6 @@ class MailUIProvider with ChangeNotifier {
   bool _mailEditorIsOpen = false;
   bool get mailEditorIsOpen => _mailEditorIsOpen;
 
-  bool _showFilteredMails = false;
-  bool get showFilteredMails => _showFilteredMails;
-
   MailDataModel _mailData =
       MailDataModel(from: '', to: [], subject: '', html: '');
   MailDataModel get mailData => _mailData;
@@ -39,11 +36,5 @@ class MailUIProvider with ChangeNotifier {
         html: updates['html'] ?? _mailData.html,
       );
     }
-  }
-
-  void controlShowFilteredMails([bool? state]) {
-    if (_showFilteredMails == state) return;
-    _showFilteredMails = state ??= !_showFilteredMails;
-    notifyListeners();
   }
 }

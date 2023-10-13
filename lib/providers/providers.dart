@@ -1,6 +1,8 @@
+import 'package:email_client/providers/mail/send_email.dart';
 import 'package:provider/provider.dart';
 
 import 'mail/accounts.dart';
+import 'mail/list/filtered.dart';
 import 'mail/list/provider.dart';
 import 'mail/mail_ui.dart';
 import 'mail/mail_folder.dart';
@@ -20,15 +22,28 @@ final providers = [
   ChangeNotifierProvider<MailAccountsProvider>(
     create: (context) => MailAccountsProvider(context),
   ),
+  ChangeNotifierProxyProvider2<MailAccountsProvider, MailUIProvider,
+          SendEmailProvider>(
+      update: (context, accountProvider, mailUiProvider, previous) =>
+          SendEmailProvider(accountProvider.currentAccount, mailUiProvider),
+      create: (context) => SendEmailProvider(null, null)),
   ChangeNotifierProxyProvider<MailAccountsProvider, MailFolderProvider>(
-    update: (context, mailAccountsProvider, previousProv) {
-      if (mailAccountsProvider.currentAccount != previousProv?.currentAccount) {
-        return MailFolderProvider(context, mailAccountsProvider.currentAccount);
+    update: (context, accountProvider, previousProv) {
+      if (accountProvider.currentAccount != previousProv?.currentAccount) {
+        return MailFolderProvider(accountProvider.currentAccount);
       } else {
         return previousProv!;
       }
     },
-    create: (context) => MailFolderProvider(context, null),
+    create: (context) => MailFolderProvider(null),
+  ),
+  ChangeNotifierProxyProvider3<MailAccountsProvider, MailFolderProvider,
+      MailUIProvider, FilteredMailListProvider>(
+    update: (context, accountProvider, mailBoxProvider, mailUiProvider,
+            previousProv) =>
+        FilteredMailListProvider(
+            accountProvider.currentAccount, mailBoxProvider),
+    create: (context) => FilteredMailListProvider(null, null),
   ),
   ChangeNotifierProxyProvider2<MailAccountsProvider, MailFolderProvider,
       MailListProvider>(

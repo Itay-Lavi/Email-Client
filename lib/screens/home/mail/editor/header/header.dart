@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:email_client/providers/mail/list/provider.dart';
+
+import 'package:email_client/providers/mail/send_email.dart';
 import 'package:email_client/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,8 @@ class MailEditorHeader extends StatelessWidget {
     final account = context.select<MailAccountsProvider, MailAccountModel>(
         (prov) => prov.currentAccount!);
 
+    final sendEmailProvider = context.read<SendEmailProvider>();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Column(
@@ -45,8 +48,7 @@ class MailEditorHeader extends StatelessWidget {
                   title: 'Discard'),
             if (!Responsive.isMobile(context))
               MailHeaderBtnIcon(
-                  onTap: () =>
-                      context.read<MailListProvider>().sendEmail(context),
+                  onTap: () => sendEmailProvider.sendEmail(context),
                   icon: Icons.send,
                   title: 'Send')
           ]),

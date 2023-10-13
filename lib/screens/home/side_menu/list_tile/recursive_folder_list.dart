@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../models/mail_folder.dart';
+import '../../../../providers/mail/list/filtered.dart';
 import '../../../../providers/mail/mail_folder.dart';
 
 import './item.dart';
@@ -15,6 +16,11 @@ class RecursiveFolderList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mailBoxProv = context.read<MailFolderProvider>();
+    void setFolder(MailFolderModel folder) {
+      context.read<FilteredMailListProvider>().controlShowFilteredMails(false);
+      mailBoxProv.setCurrentFolder(folder);
+    }
+
     final currentFolderName = context.select<MailFolderProvider, String?>(
       (prov) => prov.currentFolder?.name ?? '',
     );
@@ -28,7 +34,7 @@ class RecursiveFolderList extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.only(left: (level + 1) * 16),
               child: InkWellListTile(
-                onTap: () => mailBoxProv.setCurrentFolder(folder),
+                onTap: () => setFolder(folder),
                 listTile: FolderListTile(
                   selected: folder.name == currentFolderName,
                 ),
@@ -44,7 +50,7 @@ class RecursiveFolderList extends StatelessWidget {
       children: [
         if (folder.name != '[Gmail]')
           InkWellListTile(
-            onTap: () => mailBoxProv.setCurrentFolder(folder),
+            onTap: () => setFolder(folder),
             listTile: ChangeNotifierProvider.value(
               value: folder,
               child: FolderListTile(

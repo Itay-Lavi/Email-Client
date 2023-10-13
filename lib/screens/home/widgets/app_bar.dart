@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:email_client/models/mail.dart';
 import 'package:email_client/providers/mail/mail_ui.dart';
+import 'package:email_client/providers/mail/send_email.dart';
 import 'package:email_client/screens/home/mail/view/header/actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -93,7 +94,8 @@ class _HomeAppBarState extends State<HomeAppBar> {
         if (mailEditorIsOpen)
           IconButton(
             icon: const Icon(Icons.send),
-            onPressed: () => mailListProvider.sendEmail(context),
+            onPressed: () =>
+                context.read<SendEmailProvider>().sendEmail(context),
           ),
         if (mailIsSelected && !mailEditorIsOpen)
           ChangeNotifierProvider.value(
