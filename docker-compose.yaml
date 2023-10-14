@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  backend:
+    image: itailavi/email-backend
+    env_file:
+      - ./env/backend.env
+    restart: always
+
+  nginx-backend:
+    image: itailavi/nginx-backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - backend
+    volumes:
+      - ./ssl:/etc/nginx/ssl
+
+# can comment this if using mobile app
+  flutter:
+    # uncomment to use your own backend domain
+    # build:
+    #   context: ./email_client
+    image: itailavi/email-client
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - nginx-backend
+    volumes:
+      # - ./ssl-validation:/usr/share/nginx/html/.well-known/pki-validation/
+      - ./ssl:/etc/nginx/ssl
+      

@@ -1,8 +1,13 @@
+import 'package:email_client/config/config.dart';
 import 'package:email_client/util/compression.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 enum HttpMethod { get, post, patch, put }
+
+Uri parseUrl(String path) {
+  return Uri.parse(API_URL + path);
+}
 
 Future<dynamic> httpRequest(
     Uri url, Map<String, String> headers, HttpMethod method,

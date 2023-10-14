@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 import 'config/theme.dart';
@@ -10,8 +9,6 @@ import 'providers/settings_provider.dart';
 import 'screens/settings_screen.dart';
 
 void main() async {
-  //setUrlStrategy(PathUrlStrategy());
-  await dotenv.load(fileName: "api.env");
   runApp(const MyApp());
 }
 

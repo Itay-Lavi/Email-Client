@@ -1,0 +1,16 @@
+# Ignore everything
+*
+
+!.gitignore
+!web/
+!web/**
+
+!lib/
+!lib/**
+
+!assets/
+!assets/**
+
+!pubspec.yaml
+!nginx
+!nginx/**

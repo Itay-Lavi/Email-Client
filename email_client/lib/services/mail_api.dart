@@ -6,8 +6,6 @@ import 'package:email_client/models/mail_account.dart';
 import 'package:email_client/models/send_mail.dart';
 import 'package:email_client/util/http.dart';
 
-import '../config/config.dart';
-
 class MailApiService {
   final MailAccountModel account;
   final MailDataModel? emailData;
@@ -31,8 +29,7 @@ class MailApiService {
 
   Future<Map<String, dynamic>> getMails() async {
     final queryParams = {'fetchSlice': fetchSlice, 'mailbox': folderName};
-    final url =
-        Uri.http(hostname, '/mail').replace(queryParameters: queryParams);
+    final url = parseUrl('/mail').replace(queryParameters: queryParams);
 
     final response = await httpRequest(url, headers, HttpMethod.get);
 
@@ -41,27 +38,26 @@ class MailApiService {
 
   Future<Map<String, dynamic>> getMailsByText(String text) async {
     final queryParams = {'mailbox': folderName, 'filter': text};
-    final url = Uri.http(hostname, '/mail/filter')
-        .replace(queryParameters: queryParams);
+    final url = parseUrl('/mail/filter').replace(queryParameters: queryParams);
 
     return await httpRequest(url, headers, HttpMethod.get);
   }
 
   Future<void> sendMail() async {
-    final url = Uri.http(hostname, '/mail');
+    final url = parseUrl('/mail');
     await httpRequest(url, headers, HttpMethod.post, emailData!.toJson());
   }
 
   Future<void> flagMail(
       String mailId, List<String> flags, bool addFlags) async {
     final body = {'flags': flags, 'addFlags': addFlags};
-    final url = Uri.http(hostname, '/mail/flag/$mailId');
+    final url = parseUrl('/mail/flag/$mailId');
     await httpRequest(url, headers, HttpMethod.patch, jsonEncode(body));
   }
 
   Future<void> moveMailFolder(String mailId, String folderCallname) async {
     final body = {'folder': folderCallname};
-    final url = Uri.http(hostname, '/mail/move/$mailId');
+    final url = parseUrl('/mail/move/$mailId');
     await httpRequest(url, headers, HttpMethod.put, jsonEncode(body));
   }
 }

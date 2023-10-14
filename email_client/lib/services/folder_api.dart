@@ -15,7 +15,7 @@ class FolderApiService {
   }
 
   Future<List<dynamic>> getFolders() async {
-    final url = Uri.http(hostname, '/folder');
+    final url = Uri.parse('$API_URL/folder');
     final body = await httpRequest(url, headers, HttpMethod.get);
 
     return body['response'] as List<dynamic>;

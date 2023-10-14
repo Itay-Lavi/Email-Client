@@ -1,14 +1,2 @@
-# Ignore everything
-*
-
-!.gitignore
-!web/
-!web/**
-
-!lib/
-!lib/**
-
-!assets/
-!assets/**
-
-!pubspec.yaml
+env/*
+move-compose-file-command.txt

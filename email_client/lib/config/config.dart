@@ -1,6 +1,5 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-final hostname = dotenv.env['HOSTNAME']!;
+// ignore: constant_identifier_names
+const API_URL = 'localhost:8000';
 
 List<String> specialUseAttribTypes = [
   r'\Trash',

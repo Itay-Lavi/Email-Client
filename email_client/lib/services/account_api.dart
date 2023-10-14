@@ -1,4 +1,3 @@
-import '../config/config.dart';
 import '../models/mail_account.dart';
 import '../util/http.dart';
 
@@ -9,7 +8,7 @@ class AccountApiService {
   AccountApiService({required this.account});
 
   static Future<List<String>> fetchSupportedHosts() async {
-    final url = Uri.http(hostname, '/auth/hosts');
+    final url = parseUrl('/auth/hosts');
     final body = await httpRequest(url, {}, HttpMethod.get);
     final decodedBody = body['response'] as List<dynamic>;
     final List<String> response =
@@ -24,7 +23,7 @@ class AccountApiService {
       'hosting': account.host
     };
 
-    final url = Uri.http(hostname, '/auth');
+    final url = parseUrl('/auth');
     final body = await httpRequest(url, headers, HttpMethod.post);
     return body['response'] as dynamic;
   }
@@ -36,7 +35,7 @@ class AccountApiService {
     headers = {
       'Authorization': account.jwt!,
     };
-    final url = Uri.http(hostname, '/auth');
+    final url = parseUrl('/auth');
     final body = await httpRequest(url, headers, HttpMethod.get);
     final accountResponse = body['response'] as Map<String, dynamic>;
     return accountResponse['email'] == account.email;
