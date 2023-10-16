@@ -1,5 +1,5 @@
 // ignore: constant_identifier_names
-const API_URL = 'localhost:8000';
+const API_URL = 'http://localhost:8001';
 
 List<String> specialUseAttribTypes = [
   r'\Trash',

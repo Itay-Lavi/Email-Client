@@ -2,8 +2,6 @@
 *
 
 !.gitignore
-!web/
-!web/**
 
 !lib/
 !lib/**
