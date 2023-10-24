@@ -61,9 +61,8 @@ export async function getMails(req: Request, res: Response) {
 }
 
 export async function flagMail(req: Request, res: Response) {
-  const messageId = req.params.id;
-  const flags: string[] = req.body.flags;
-  const addFlags: boolean = req.body.addFlags;
+  const { id: messageId, flags, addFlags }: { id: string | null, flags: string[] | null, addFlags: boolean | null } = req.body;
+
 
   if (!messageId || !flags || addFlags == null) {
     return res.status(403).json({ response: 'Invalid Params' });
@@ -86,8 +85,8 @@ export async function flagMail(req: Request, res: Response) {
 }
 
 export async function moveMail(req: Request, res: Response) {
-  const messageId = req.params.id;
-  const folder = req.body.folder as string;
+  const messageId: string | null = req.body.id;
+  const folder: string | null = req.body.folder;
 
   if (!messageId || !folder) {
     return res.status(403).json({ response: 'Invalid Params' });
@@ -100,7 +99,7 @@ export async function moveMail(req: Request, res: Response) {
   } as MailAccount;
 
   try {
-    await mailApi.moveMailToFolder(auth, messageId, folder);
+    await mailApi.moveMailToFolder(auth, messageId!, folder);
   } catch (e: any) {
     return res.status(404).json({ response: e.message });
   }
