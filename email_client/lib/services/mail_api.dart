@@ -50,14 +50,14 @@ class MailApiService {
 
   Future<void> flagMail(
       String mailId, List<String> flags, bool addFlags) async {
-    final body = {'flags': flags, 'addFlags': addFlags};
-    final url = parseUrl('/mail/flag/$mailId');
+    final body = {'flags': flags, 'addFlags': addFlags, 'id': mailId};
+    final url = parseUrl('/mail/flag');
     await httpRequest(url, headers, HttpMethod.patch, jsonEncode(body));
   }
 
   Future<void> moveMailFolder(String mailId, String folderCallname) async {
-    final body = {'folder': folderCallname};
-    final url = parseUrl('/mail/move/$mailId');
+    final body = {'folder': folderCallname, 'id': mailId};
+    final url = parseUrl('/mail/move');
     await httpRequest(url, headers, HttpMethod.put, jsonEncode(body));
   }
 }

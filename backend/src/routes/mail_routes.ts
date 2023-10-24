@@ -7,9 +7,9 @@ router.get('/', getMails);
 
 router.get('/filter', searchByText);
 
-router.patch('/flag/:id', flagMail);
+router.patch('/flag', flagMail);
 
-router.put('/move/:id', moveMail);
+router.put('/move', moveMail);
 
 router.post('/', sendMail);
 
