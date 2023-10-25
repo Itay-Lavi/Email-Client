@@ -1,5 +1,5 @@
 // ignore: constant_identifier_names
-const API_URL = 'http://localhost:8001';
+const API_URL = 'https://itayemail.online:8000';
 
 List<String> specialUseAttribTypes = [
   r'\Trash',
