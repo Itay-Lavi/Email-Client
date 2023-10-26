@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-backend
+  template:
+    metadata:
+      labels:
+        app: nginx-backend
+    spec:
+      containers:
+        - name: nginx-backend
+          image: itailavi/nginx-backend:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: ssl-volume
+              mountPath: /etc/nginx/ssl
+      volumes:
+        - name: ssl-volume
+          persistentVolumeClaim:
+            claimName: ssl-pvc
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-backend-service
+spec:
+  selector:
+    app: nginx-backend
+  type: LoadBalancer
+  ports:
+    - name: https
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
+

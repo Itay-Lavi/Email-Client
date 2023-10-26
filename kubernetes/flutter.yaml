@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flutter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flutter
+  template:
+    metadata:
+      labels:
+        app: flutter
+    spec:
+      containers:
+        - name: flutter
+          image: itailavi/email-client:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html/.well-known/pki-validation/
+              name: ssl-validation-volume
+            - mountPath: /etc/nginx/ssl
+              name: ssl-volume
+      volumes:
+        - name: ssl-validation-volume
+          persistentVolumeClaim:
+            claimName: ssl-validation-pvc
+        - name: ssl-volume
+          persistentVolumeClaim:
+            claimName: ssl-pvc
+            
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: flutter-service
+spec:
+  selector:
+    app: flutter
+  type: LoadBalancer
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443
