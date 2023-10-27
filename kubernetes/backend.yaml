@@ -14,14 +14,25 @@ spec:
     spec:
       restartPolicy: Always
       containers:
+        - name: nginx-backend
+          image: itailavi/nginx-backend:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: ssl-volume
+              mountPath: /etc/nginx/ssl
         - name: backend
           image: itailavi/email-backend:latest
           imagePullPolicy: Always
           env:
             - name: PORT
-              value: "8000"
+              value: "80"
             - name: JWT_SECRET
-              value: "secret"
+              value: ""
+      volumes:
+        - name: ssl-volume
+          persistentVolumeClaim:
+            claimName: ssl-pvc
+
 ---
 apiVersion: v1
 kind: Service
@@ -30,10 +41,10 @@ metadata:
 spec:
   selector:
     app: backend
-  type: ClusterIP
+  type: LoadBalancer
   ports:
-    - name: http
+    - name: https
       protocol: TCP
       port: 8000
       targetPort: 8000
-      
+      nodePort: 8000
