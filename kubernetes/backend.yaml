@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: nginx-backend
+          image: itailavi/nginx-backend:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: ssl-volume
+              mountPath: /etc/nginx/ssl
+        - name: backend
+          image: itailavi/email-backend:latest
+          imagePullPolicy: Always
+          env:
+            - name: PORT
+              value: "8000"
+            - name: JWT_SECRET
+              value: ""
+      volumes:
+        - name: ssl-volume
+          persistentVolumeClaim:
+            claimName: ssl-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  type: LoadBalancer
+  ports:
+    - name: https
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 8000
