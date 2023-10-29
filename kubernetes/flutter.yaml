@@ -17,20 +17,14 @@ spec:
           image: itailavi/email-client:latest
           imagePullPolicy: Always
           volumeMounts:
-            - mountPath: /usr/share/nginx/html/.well-known/pki-validation/
-              name: ssl-validation-volume
             - mountPath: /etc/nginx/ssl
               name: ssl-volume
       volumes:
-        - name: ssl-validation-volume
-          persistentVolumeClaim:
-            claimName: ssl-validation-pvc
         - name: ssl-volume
           persistentVolumeClaim:
             claimName: ssl-pvc
-            
----
 
+---
 apiVersion: v1
 kind: Service
 metadata:
