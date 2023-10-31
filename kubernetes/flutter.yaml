@@ -19,10 +19,15 @@ spec:
           volumeMounts:
             - mountPath: /etc/nginx/ssl
               name: ssl-volume
+            - mountPath: /usr/share/nginx/html
+              name: ssl-validation
       volumes:
         - name: ssl-volume
           persistentVolumeClaim:
             claimName: ssl-pvc
+        - name: ssl-validation-volume
+          persistentVolumeClaim:
+            claimName: ssl-validation-pvc
 
 ---
 apiVersion: v1
