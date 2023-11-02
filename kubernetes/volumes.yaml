@@ -28,34 +28,3 @@ spec:
     requests:
       storage: 100Mi
 apiVersion: v1
-
----
-
-kind: PersistentVolume
-metadata:
-  name: ssl-validation-pv
-spec:
-  capacity:
-    storage: 100Mi
-  volumeMode: Filesystem
-  storageClassName: standard
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: /mnt/data/ssl-validation
-    type: DirectoryOrCreate
-    
----
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: ssl-validation-pvc
-spec:
-  volumeName: ssl-validation-pv
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: standard
-  resources:
-    requests:
-      storage: 100Mi

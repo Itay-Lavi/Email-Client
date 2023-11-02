@@ -3,7 +3,9 @@ kind: CronJob
 metadata:
   name: zerossl-bot-cron
 spec:
-  schedule: '0 0 * * *'
+  schedule: '30 1 1,15 * *' 
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
@@ -20,9 +22,18 @@ spec:
                 - name: ZEROSSL_ACCESS_KEY
                   value: ''
                 - name: DOMAIN
-                  value: ''
+                  value: 'itayemail.online'
                 - name: EMAIL
                   value: ''
+                - name: DEPLOYMENT_SELECTOR_ARR
+                  value: 'app=flutter,app=backend'
+                - name: MAIN_SERVICE_NAME
+                  value: 'flutter-service'
+                - name: BOT_SERVICE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: service-config
+                      key: service
               volumeMounts:
                 - mountPath: /root/ssl
                   name: ssl-volume
@@ -30,3 +41,25 @@ spec:
             - name: ssl-volume
               persistentVolumeClaim:
                 claimName: ssl-pvc
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-config
+data:
+  service: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: zerossl-bot-service
+    spec:
+      type: NodePort
+      selector:
+        app: zerossl-bot
+      ports:
+        - protocol: TCP
+          port: 80
+          targetPort: 80
+          nodePort: 80
