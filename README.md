@@ -88,7 +88,7 @@ npm start
 This project is licensed under the MIT License.
 
 ### Acknowledgments
-Disclaimer: This app was developed as a personal project and is not affiliated with any official Israeli radio stations.
+Disclaimer: This app was developed as a personal project and is not affiliated with any official Emails providers.
 
 For any inquiries, please contact us at  itailavi0212@gmail.com.
 
