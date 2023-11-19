@@ -55,6 +55,7 @@ dependencies:
   form_validator: ^2.1.1
   another_flushbar: ^1.12.30
   shared_preferences: ^2.2.1
+  url_launcher: ^6.2.1
 
 dev_dependencies:
   flutter_test:

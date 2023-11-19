@@ -1,4 +1,5 @@
 import 'package:email_client/providers/mail/accounts.dart';
+import 'package:email_client/providers/ui_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +20,14 @@ class _AuthScreenState extends State<AuthScreen> {
   void controlShowingAccounts(bool value) {
     setState(() {
       showAccounts = value;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<UIProvider>().firstCheckAndShowInfoDialog(context);
     });
   }
 

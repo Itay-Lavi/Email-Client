@@ -1,5 +1,6 @@
 import 'package:email_client/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Future<void> showInfoDialog(BuildContext context) async {
   return showDialog<void>(
@@ -44,11 +45,11 @@ Future<void> showInfoDialog(BuildContext context) async {
                         logoIconBtn(Assets.icons.platforms.googleIcon,
                             'https://myaccount.google.com/apppasswords'),
                         logoIconBtn(Assets.icons.platforms.outlookIcon,
-                            'https://myaccount.google.com/apppasswords'),
+                            'https://account.live.com/proofs/AppPassword'),
                         logoIconBtn(Assets.icons.platforms.yahooIcon,
-                            'https://myaccount.google.com/apppasswords'),
+                            'https://login.yahoo.com/myaccount/security/app-password'),
                         logoIconBtn(Assets.icons.platforms.appleIcon,
-                            'https://myaccount.google.com/apppasswords'),
+                            'https://appleid.apple.com/account/manage'),
                       ],
                     ),
                   ),
@@ -69,5 +70,10 @@ Future<void> showInfoDialog(BuildContext context) async {
 }
 
 IconButton logoIconBtn(AssetGenImage asset, String url) {
-  return IconButton(onPressed: () {}, icon: asset.image(width: 30, height: 30));
+  return IconButton(
+      onPressed: () async {
+        final Uri uri = Uri.parse(url);
+        launchUrl(uri);
+      },
+      icon: asset.image(width: 30, height: 30));
 }

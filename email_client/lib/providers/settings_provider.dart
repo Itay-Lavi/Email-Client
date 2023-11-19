@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../data/local_storage.dart';
 
 class SettingsProvider with ChangeNotifier {
   bool _darkMode = false;
   bool get darkMode => _darkMode;
 
   SettingsProvider() {
-    void init() async {
-      final prefs = await SharedPreferences.getInstance();
-      _darkMode = prefs.getBool('theme') ?? false;
+    void init() {
+      _darkMode = LocalStorage().getValue<bool>('theme') ?? false;
       notifyListeners();
     }
 
-    init();
+    try {
+      init();
+    } catch (_) {}
   }
 
-  void controlTheme(bool value) async {
+  void controlTheme(bool value) {
     _darkMode = value;
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setBool('theme', _darkMode);
+    LocalStorage().setValue<bool>('theme', _darkMode);
     notifyListeners();
   }
 }
