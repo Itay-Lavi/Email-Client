@@ -1,3 +1,4 @@
+import 'package:email_client/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 
 Future<void> showInfoDialog(BuildContext context) async {
@@ -28,11 +29,10 @@ Future<void> showInfoDialog(BuildContext context) async {
                   ),
                   const SizedBox(width: 10),
                   if (screenWidth > 400)
-                    Image.asset(
-                      'assets/images/secure_cloud.png',
+                    Assets.images.secureCloud.image(
                       height: 110,
                       width: 110,
-                    ),
+                    )
                 ],
               ),
               const SizedBox(height: 10),

@@ -1,3 +1,4 @@
+import 'package:email_client/gen/assets.gen.dart';
 import 'package:email_client/providers/mail/list/filtered.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,10 +35,7 @@ class Mailbox extends StatelessWidget {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/images/no-data.png',
-                      scale: 4,
-                    ),
+                    Assets.icons.noData.image(scale: 4),
                     const Text('No Emails Found!')
                   ],
                 );

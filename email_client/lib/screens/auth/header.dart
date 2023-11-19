@@ -1,3 +1,4 @@
+import 'package:email_client/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,14 +28,9 @@ class AuthHeader extends StatelessWidget {
       children: [
         if (showImage)
           Align(
-            alignment: Alignment.center,
-            child: Image.asset(
-              'assets/images/logo.png',
-              width: 100,
-              height: 100,
               alignment: Alignment.center,
-            ),
-          ),
+              child: Assets.icons.logo
+                  .image(width: 100, height: 100, alignment: Alignment.center)),
         if (mailAccountProv.currentAccount != null)
           Align(
             alignment: Alignment.centerLeft,
