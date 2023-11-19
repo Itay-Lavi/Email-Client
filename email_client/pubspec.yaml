@@ -55,11 +55,14 @@ dependencies:
   form_validator: ^2.1.1
   another_flushbar: ^1.12.30
   shared_preferences: ^2.2.1
+  url_launcher: ^6.2.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  build_runner:
+  flutter_gen_runner:
 
   flutter_launcher_icons: "^0.13.1"
 
@@ -83,9 +86,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/logo.png
-    - assets/images/no_mail_selected.png
-    - assets/images/no-data.png
+    - assets/images/
+    - assets/icons/
+    - assets/icons/platforms/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

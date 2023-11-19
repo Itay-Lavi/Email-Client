@@ -4,11 +4,14 @@ import 'package:provider/provider.dart';
 import 'config/theme.dart';
 import './screens/auth/auth_screen.dart';
 import './screens/home/home_screen.dart';
+import 'data/local_storage.dart';
 import 'providers/providers.dart';
 import 'providers/settings_provider.dart';
 import 'screens/settings_screen.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocalStorage().init();
   runApp(const MyApp());
 }
 

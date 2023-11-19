@@ -13,6 +13,7 @@ ThemeData lightTheme(BuildContext context) {
         secondary: Color.fromARGB(255, 24, 74, 148),
         onBackground: Color.fromARGB(255, 65, 65, 65),
         background: Colors.white),
+    iconTheme: const IconThemeData(color: Color.fromARGB(255, 65, 65, 65)),
     appBarTheme: const AppBarTheme(
         foregroundColor: Colors.white,
         backgroundColor: Color.fromARGB(255, 62, 132, 207)),

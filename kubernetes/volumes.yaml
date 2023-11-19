@@ -4,7 +4,7 @@ metadata:
   name: ssl-pv
 spec:
   capacity:
-    storage: 1Gi
+    storage: 100Mi
   volumeMode: Filesystem
   storageClassName: standard
   accessModes:
@@ -12,7 +12,9 @@ spec:
   hostPath:
     path: /mnt/data/ssl
     type: DirectoryOrCreate
+    
 ---
+
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -24,4 +26,5 @@ spec:
   storageClassName: standard
   resources:
     requests:
-      storage: 1Gi
+      storage: 100Mi
+apiVersion: v1

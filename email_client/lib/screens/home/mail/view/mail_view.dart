@@ -1,3 +1,4 @@
+import 'package:email_client/gen/assets.gen.dart';
 import 'package:email_client/models/mail.dart';
 import 'package:email_client/providers/mail/list/provider.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class MailView extends StatelessWidget {
           SizedBox(
             width: 100,
             height: 100,
-            child: Image.asset('assets/images/no_mail_selected.png'),
+            child: Assets.icons.noMailSelected.image(),
           ),
           Text(
             'No Mail Selected',

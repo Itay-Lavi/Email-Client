@@ -1,3 +1,4 @@
+import 'package:email_client/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -13,9 +14,7 @@ class SplashScreen extends StatelessWidget {
             SizedBox(
               width: 200,
               height: 200,
-              child: Image.asset(
-                'assets/images/logo.png',
-              ),
+              child: Assets.icons.logo.image(),
             ),
             const SizedBox(height: 20),
             const CircularProgressIndicator()

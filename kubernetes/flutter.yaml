@@ -12,6 +12,7 @@ spec:
       labels:
         app: flutter
     spec:
+      restartPolicy: Always
       containers:
         - name: flutter
           image: itailavi/email-client:latest
@@ -25,6 +26,7 @@ spec:
             claimName: ssl-pvc
 
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
