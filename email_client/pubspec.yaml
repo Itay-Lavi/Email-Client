@@ -86,6 +86,7 @@ flutter:
     - assets/images/logo.png
     - assets/images/no_mail_selected.png
     - assets/images/no-data.png
+    - assets/images/secure_cloud.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

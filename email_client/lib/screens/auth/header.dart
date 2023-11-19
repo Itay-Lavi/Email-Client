@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/mail/accounts.dart';
 import '../home/home_screen.dart';
+import 'info_dialog.dart';
 
 class AuthHeader extends StatelessWidget {
   final bool showImage;
@@ -42,6 +43,12 @@ class AuthHeader extends StatelessWidget {
               icon: const Icon(Icons.arrow_back),
             ),
           ),
+        Align(
+          alignment: Alignment.topRight,
+          child: IconButton(
+              onPressed: () => showInfoDialog(context),
+              icon: const Icon(Icons.info_outline)),
+        )
       ],
     );
   }
