@@ -22,6 +22,8 @@ class $AssetsIconsGen {
   AssetGenImage get noMailSelected =>
       const AssetGenImage('assets/icons/no_mail_selected.png');
 
+  $AssetsIconsPlatformsGen get platforms => const $AssetsIconsPlatformsGen();
+
   /// List of all assets
   List<AssetGenImage> get values => [logo, noData, noMailSelected];
 }
@@ -35,6 +37,30 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [secureCloud];
+}
+
+class $AssetsIconsPlatformsGen {
+  const $AssetsIconsPlatformsGen();
+
+  /// File path: assets/icons/platforms/apple-icon.png
+  AssetGenImage get appleIcon =>
+      const AssetGenImage('assets/icons/platforms/apple-icon.png');
+
+  /// File path: assets/icons/platforms/google-icon.png
+  AssetGenImage get googleIcon =>
+      const AssetGenImage('assets/icons/platforms/google-icon.png');
+
+  /// File path: assets/icons/platforms/outlook-icon.png
+  AssetGenImage get outlookIcon =>
+      const AssetGenImage('assets/icons/platforms/outlook-icon.png');
+
+  /// File path: assets/icons/platforms/yahoo-icon.png
+  AssetGenImage get yahooIcon =>
+      const AssetGenImage('assets/icons/platforms/yahoo-icon.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values =>
+      [appleIcon, googleIcon, outlookIcon, yahooIcon];
 }
 
 class Assets {

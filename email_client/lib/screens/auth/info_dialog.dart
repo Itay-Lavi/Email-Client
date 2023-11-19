@@ -38,7 +38,20 @@ Future<void> showInfoDialog(BuildContext context) async {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  const Spacer(),
+                  Expanded(
+                    child: Wrap(
+                      children: [
+                        logoIconBtn(Assets.icons.platforms.googleIcon,
+                            'https://myaccount.google.com/apppasswords'),
+                        logoIconBtn(Assets.icons.platforms.outlookIcon,
+                            'https://myaccount.google.com/apppasswords'),
+                        logoIconBtn(Assets.icons.platforms.yahooIcon,
+                            'https://myaccount.google.com/apppasswords'),
+                        logoIconBtn(Assets.icons.platforms.appleIcon,
+                            'https://myaccount.google.com/apppasswords'),
+                      ],
+                    ),
+                  ),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -53,4 +66,8 @@ Future<void> showInfoDialog(BuildContext context) async {
       );
     },
   );
+}
+
+IconButton logoIconBtn(AssetGenImage asset, String url) {
+  return IconButton(onPressed: () {}, icon: asset.image(width: 30, height: 30));
 }
